@@ -1,0 +1,30 @@
+# Core
+torch>=2.1
+torchvision>=0.16
+numpy
+pillow
+pyyaml
+tqdm
+
+# Generative (Stable Diffusion + LoRA) -- Member 2
+diffusers>=0.27
+transformers>=4.40
+peft>=0.10
+accelerate>=0.29
+
+# Metrics -- Member 3
+scikit-learn
+clean-fid            # FID for generative quality
+grad-cam             # pytorch-grad-cam, Grad-CAM heatmaps
+
+# Backend -- Member 4
+fastapi
+uvicorn[standard]
+python-multipart
+
+# Notebooks / viz
+matplotlib
+pandas
+jupyter
+
+# NOTE: LLaVA runs via Ollama (separate install, NOT pip). See README.

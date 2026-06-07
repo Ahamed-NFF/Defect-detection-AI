@@ -1,0 +1,8 @@
+[project]
+name = "defect-detection"
+version = "0.1.0"
+description = "GAN/Diffusion-augmented manufacturing defect detection (Advanced AI project)"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+include = ["src*", "backend*"]

@@ -1,0 +1,12 @@
+# Stable Diffusion + LoRA fine-tuning config (Member 2)
+base_model: "runwayml/stable-diffusion-v1-5"
+resolution: 512
+train_batch_size: 1
+gradient_accumulation_steps: 4
+learning_rate: 1.0e-4
+lora_rank: 16
+max_train_steps: 1500          # ~1-2h on a single mid GPU; keep short for shared queue
+checkpoint_every: 250          # MUST checkpoint often -> survive queue eviction
+mixed_precision: "fp16"
+instance_prompt: "a photo of a sks {category} with a defect"
+output_dir: "experiments/checkpoints/{category}_lora"
