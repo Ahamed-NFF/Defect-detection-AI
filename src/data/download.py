@@ -4,24 +4,28 @@ Download a 3-category subset of MVTec AD via Hugging Face.
 The official MVTec AD release is a ~5 GB tarball gated behind a registration
 form, which is impractical on a bandwidth-constrained machine. The
 ``Voxel51/mvtec-ad`` dataset on Hugging Face mirrors the same data and lets us
-fetch only the categories we actually need via ``allow_patterns``. We use
-exactly three:
+fetch only the categories we actually need. We use exactly three:
 
     bottle, hazelnut, carpet     (2 objects + 1 texture)
 
-The Voxel51 mirror is *not guaranteed* to ship the canonical MVTec layout. This
-module therefore does two things after the filtered download:
+The Voxel51 mirror is a *FiftyOne export*, not the canonical MVTec layout:
+images live flat under ``data/data_N/*.png`` and the per-image labels
+(category / split / defect type / mask path) come from a top-level
+``samples.json`` manifest. This module therefore:
 
-    1. Inspect the resulting directory tree to figure out which layout we got.
-    2. Reorganize (if needed) into the canonical structure that
+    1. Downloads ``samples.json`` (~1.6 MB).
+    2. Filters samples to the requested categories.
+    3. Downloads ONLY the image + mask files those samples reference,
+       via ``snapshot_download(allow_patterns=<exact paths>)``.
+    4. Reorganizes the downloaded files into the canonical structure that
        ``src/data/dataset.py`` expects::
 
            data/raw/<category>/train/good/*.png
            data/raw/<category>/test/good/*.png
            data/raw/<category>/test/<defect_type>/*.png
-           data/raw/<category>/ground_truth/<defect_type>/*.png   (if present)
+           data/raw/<category>/ground_truth/<defect_type>/*.png   (defects only)
 
-It then prints a per-category summary table so a failed/empty download is loud.
+    5. Prints a per-category summary table so a failed/empty download is loud.
 
 Run as::
 
@@ -37,12 +41,14 @@ License: MVTec AD is CC BY-NC-SA 4.0 — academic use only, cite the paper.
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
 import sys
 from pathlib import Path
 
 CATEGORIES = ["bottle", "hazelnut", "carpet"]
 HF_REPO_ID = "Voxel51/mvtec-ad"
+MANIFEST_FILENAME = "samples.json"
 STAGING_DIRNAME = "_hf_staging"
 
 IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"}
@@ -54,9 +60,9 @@ IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"}
 def _import_hf():
     """Lazy-import huggingface_hub; print install hint and exit cleanly if absent."""
     try:
-        from huggingface_hub import snapshot_download
+        from huggingface_hub import hf_hub_download, snapshot_download
         from huggingface_hub.utils import HfHubHTTPError
-        return snapshot_download, HfHubHTTPError
+        return hf_hub_download, snapshot_download, HfHubHTTPError
     except ImportError:
         print(
             "ERROR: huggingface_hub is required for this script.\n"
@@ -97,45 +103,84 @@ def _category_is_complete(category_root: Path) -> bool:
 
 
 # --------------------------------------------------------------------------- #
+# Manifest (samples.json) handling
+# --------------------------------------------------------------------------- #
+def _download_manifest(staging_dir: Path) -> Path:
+    """Fetch ``samples.json`` from the HF repo into ``staging_dir``."""
+    hf_hub_download, _, HfHubHTTPError = _import_hf()
+    staging_dir.mkdir(parents=True, exist_ok=True)
+    print(f"Fetching manifest '{MANIFEST_FILENAME}' from '{HF_REPO_ID}'...")
+    try:
+        path = hf_hub_download(
+            repo_id=HF_REPO_ID,
+            repo_type="dataset",
+            filename=MANIFEST_FILENAME,
+            local_dir=str(staging_dir),
+        )
+    except HfHubHTTPError as exc:
+        print(
+            f"\nERROR: failed to download manifest ({exc.__class__.__name__}): {exc}\n"
+            "  Check network / HF availability.",
+            file=sys.stderr,
+        )
+        raise SystemExit(2)
+    return Path(path)
+
+
+def _load_manifest(manifest_path: Path) -> list[dict]:
+    """Parse the FiftyOne ``samples.json`` and return its list of sample records."""
+    with open(manifest_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    samples = data.get("samples")
+    if not isinstance(samples, list):
+        raise RuntimeError(
+            f"unexpected manifest schema in {manifest_path}: 'samples' key missing"
+        )
+    return samples
+
+
+def _filter_samples(samples: list[dict], categories) -> list[dict]:
+    """Keep only samples whose category label is in ``categories``."""
+    wanted = set(categories)
+    return [s for s in samples if s.get("category", {}).get("label") in wanted]
+
+
+def _required_repo_paths(samples: list[dict]) -> list[str]:
+    """All repo-relative file paths referenced by the given samples (images + masks)."""
+    paths: set[str] = set()
+    for s in samples:
+        fp = s.get("filepath")
+        if fp:
+            paths.add(fp)
+        mask = s.get("defect_mask") or {}
+        mp = mask.get("mask_path")
+        if mp:
+            paths.add(mp)
+    return sorted(paths)
+
+
+# --------------------------------------------------------------------------- #
 # Hugging Face download
 # --------------------------------------------------------------------------- #
-def _allow_patterns(categories) -> list[str]:
-    """Build fnmatch patterns covering the canonical category folder at common depths.
-
-    huggingface_hub matches with stdlib ``fnmatch``; ``*`` matches across path
-    separators, so ``bottle/*`` already covers ``bottle/train/good/000.png``.
-    The nested variants exist in case the mirror wraps everything under a
-    repo-level prefix (e.g. ``mvtec_anomaly_detection/bottle/...``).
-    """
-    patterns: list[str] = []
-    for cat in categories:
-        patterns.extend([f"{cat}/*", f"*/{cat}/*", f"*/*/{cat}/*"])
-    return patterns
-
-
-def _hf_filtered_download(categories, staging_dir: Path) -> Path:
-    """Fetch only the requested categories from ``HF_REPO_ID`` into ``staging_dir``."""
-    snapshot_download, HfHubHTTPError = _import_hf()
-
+def _hf_download_files(repo_paths: list[str], staging_dir: Path) -> Path:
+    """Fetch the exact repo paths into ``staging_dir`` via ``snapshot_download``."""
+    _, snapshot_download, HfHubHTTPError = _import_hf()
     staging_dir.mkdir(parents=True, exist_ok=True)
-    patterns = _allow_patterns(categories)
 
-    print(f"Downloading {list(categories)} from '{HF_REPO_ID}' (filtered)...")
-    print(f"  staging dir   : {staging_dir}")
-    print(f"  allow_patterns: {patterns}")
+    print(f"Downloading {len(repo_paths)} files from '{HF_REPO_ID}'...")
+    print(f"  staging dir: {staging_dir}")
 
     try:
         local_path = snapshot_download(
             repo_id=HF_REPO_ID,
             repo_type="dataset",
             local_dir=str(staging_dir),
-            allow_patterns=patterns,
+            allow_patterns=repo_paths,
         )
     except HfHubHTTPError as exc:
         print(
             f"\nERROR: Hugging Face download failed ({exc.__class__.__name__}): {exc}\n"
-            "  Check network connectivity, the repo id, and that "
-            "'Voxel51/mvtec-ad' is reachable from this machine.",
+            "  Check network connectivity and that 'Voxel51/mvtec-ad' is reachable.",
             file=sys.stderr,
         )
         raise SystemExit(2)
@@ -158,89 +203,77 @@ def _hf_filtered_download(categories, staging_dir: Path) -> Path:
 
 
 # --------------------------------------------------------------------------- #
-# Layout detection + reorganization
+# Reorganization into canonical MVTec layout
 # --------------------------------------------------------------------------- #
-def _looks_like_canonical_category(path: Path) -> bool:
-    """Heuristic: a canonical MVTec category folder has train/ and test/ children."""
-    return (
-        path.is_dir()
-        and (path / "train").is_dir()
-        and (path / "test").is_dir()
-    )
+def _canonical_image_dest(out_dir: Path, sample: dict) -> Path:
+    """Where ``sample``'s image should live in the canonical layout."""
+    category = sample["category"]["label"]
+    split = sample["split"]  # "train" or "test"
+    defect = sample["defect"]["label"]  # "good" or a defect type
+    basename = Path(sample["filepath"]).name
+    return out_dir / category / split / defect / basename
 
 
-def _find_canonical_root(staging: Path, category: str) -> Path | None:
-    """Locate the canonical-layout root for ``category`` somewhere under ``staging``.
-
-    Returns the directory whose basename equals ``category`` and which contains
-    both ``train/`` and ``test/`` subfolders. Searches the obvious top-level
-    location first, then falls back to a recursive walk.
-    """
-    direct = staging / category
-    if _looks_like_canonical_category(direct):
-        return direct
-
-    for candidate in staging.rglob(category):
-        if candidate.name != category:
-            continue  # rglob can return prefix-matches in odd FS layouts
-        if _looks_like_canonical_category(candidate):
-            return candidate
-
-    return None
+def _canonical_mask_dest(out_dir: Path, sample: dict) -> Path | None:
+    """Where ``sample``'s mask should live, if it has one."""
+    mask = sample.get("defect_mask") or {}
+    mp = mask.get("mask_path")
+    if not mp:
+        return None
+    category = sample["category"]["label"]
+    defect = sample["defect"]["label"]
+    if defect == "good":
+        return None  # canonical MVTec has masks only for defects
+    return out_dir / category / "ground_truth" / defect / Path(mp).name
 
 
-def _move_into_place(src: Path, dest: Path) -> None:
-    """Move the canonical MVTec subtree from ``src`` to ``dest``.
-
-    Only the three known top-level dirs (train/test/ground_truth) are moved so
-    that any FiftyOne sidecar files in the same parent don't get dragged along.
-    """
-    dest.mkdir(parents=True, exist_ok=True)
-    if src.resolve() == dest.resolve():
+def _place(src: Path, dest: Path) -> None:
+    """Move ``src`` to ``dest``, creating parents. Skip silently if dest exists."""
+    if not src.exists():
         return
-
-    for sub in ("train", "test", "ground_truth"):
-        sub_src = src / sub
-        if not sub_src.exists():
-            continue
-        sub_dest = dest / sub
-        if sub_dest.exists():
-            # Idempotent: leave whatever's already in place untouched.
-            continue
-        shutil.move(str(sub_src), str(sub_dest))
+    if dest.exists():
+        return
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(str(src), str(dest))
 
 
-def _describe_unknown_layout(staging: Path, category: str) -> None:
-    """Print a snapshot of what we got so the user can debug."""
-    print(
-        f"  ! could not locate a canonical MVTec subtree for '{category}' under {staging}.",
-        file=sys.stderr,
-    )
-    sample = []
-    for p in staging.rglob("*"):
-        try:
-            rel = p.relative_to(staging)
-        except ValueError:
-            continue
-        sample.append(str(rel))
-        if len(sample) >= 15:
-            break
-    if sample:
-        print("    first entries downloaded:", file=sys.stderr)
-        for s in sample:
-            print(f"      {s}", file=sys.stderr)
-    print(
-        "    The Voxel51 mirror may have changed its layout. Inspect the staging\n"
-        "    directory and adapt _find_canonical_root() if so.",
-        file=sys.stderr,
-    )
+def _reorganize(samples: list[dict], staging: Path, out_dir: Path) -> dict:
+    """Move every staged file into its canonical slot. Returns placement stats."""
+    placed_images = 0
+    placed_masks = 0
+    missing: list[str] = []
+
+    for s in samples:
+        src_img = staging / s["filepath"]
+        dest_img = _canonical_image_dest(out_dir, s)
+        if src_img.exists():
+            _place(src_img, dest_img)
+            placed_images += 1
+        else:
+            missing.append(s["filepath"])
+
+        mask = s.get("defect_mask") or {}
+        mp = mask.get("mask_path")
+        if mp:
+            src_mask = staging / mp
+            dest_mask = _canonical_mask_dest(out_dir, s)
+            if dest_mask is not None and src_mask.exists():
+                _place(src_mask, dest_mask)
+                placed_masks += 1
+
+    print(f"  placed {placed_images} image(s) and {placed_masks} mask(s) "
+          f"into canonical layout.")
+    if missing:
+        print(f"  ! {len(missing)} expected file(s) were not in the download "
+              f"(first 5): {missing[:5]}", file=sys.stderr)
+    return {"images": placed_images, "masks": placed_masks, "missing": missing}
 
 
 # --------------------------------------------------------------------------- #
 # Verification + summary table
 # --------------------------------------------------------------------------- #
 def _summarize_category(category_root: Path) -> dict:
-    """Image counts + mask presence for one category folder."""
+    """Image counts + mask presence for one canonical category folder."""
     summary = {
         "exists": category_root.is_dir(),
         "train_good": _count_images(category_root / "train" / "good"),
@@ -301,7 +334,7 @@ def _print_summary(summaries: dict) -> None:
 # Orchestration
 # --------------------------------------------------------------------------- #
 def download(categories, out_dir, force: bool = False, **_ignored):
-    """End-to-end pipeline: filtered HF download -> reorganize -> verify.
+    """End-to-end pipeline: manifest -> filtered HF download -> reorganize -> verify.
 
     Args:
         categories: iterable of MVTec category names.
@@ -329,16 +362,24 @@ def download(categories, out_dir, force: bool = False, **_ignored):
         staging = out_dir / STAGING_DIRNAME
         if staging.exists():
             shutil.rmtree(staging)
-        local = _hf_filtered_download(todo, staging)
 
-        for cat in todo:
-            canonical = _find_canonical_root(local, cat)
-            if canonical is None:
-                _describe_unknown_layout(local, cat)
-                continue
-            dest = out_dir / cat
-            print(f"  reorganizing '{cat}': {canonical} -> {dest}")
-            _move_into_place(canonical, dest)
+        manifest_path = _download_manifest(staging)
+        samples = _load_manifest(manifest_path)
+        target_samples = _filter_samples(samples, todo)
+        if not target_samples:
+            print(
+                f"\nERROR: manifest contains no samples for {todo}. "
+                f"Available categories may have changed.",
+                file=sys.stderr,
+            )
+            raise SystemExit(3)
+
+        repo_paths = _required_repo_paths(target_samples)
+        print(f"Filtered manifest: {len(target_samples)} samples "
+              f"-> {len(repo_paths)} files to fetch")
+
+        _hf_download_files(repo_paths, staging)
+        _reorganize(target_samples, staging, out_dir)
 
         # Best-effort staging cleanup; ignore if HF left a .cache lock behind.
         shutil.rmtree(staging, ignore_errors=True)
