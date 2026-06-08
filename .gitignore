@@ -4,6 +4,7 @@ data/processed/
 data/synthetic/
 experiments/checkpoints/
 experiments/results/*.json
+experiments/results/comparison.*
 reports/figures/*.png
 *.ckpt
 *.safetensors
