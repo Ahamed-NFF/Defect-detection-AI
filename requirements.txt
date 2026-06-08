@@ -27,4 +27,7 @@ matplotlib
 pandas
 jupyter
 
+# Test runner
+pytest
+
 # NOTE: LLaVA runs via Ollama (separate install, NOT pip). See README.
