@@ -1,0 +1,10 @@
+# Baseline 2: real + traditional augmentation (Member 3)
+run_name: "carpet_baseline2"
+category: "carpet"
+backbone: "resnet50"
+traditional_aug: true
+use_synthetic: false
+few_shot_n: null
+epochs: 30
+batch_size: 32
+lr: 1.0e-4

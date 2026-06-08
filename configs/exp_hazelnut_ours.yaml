@@ -1,0 +1,11 @@
+# Our method: real + traditional + diffusion-synthesized defects (Member 3)
+run_name: "hazelnut_ours"
+category: "hazelnut"
+backbone: "resnet50"
+traditional_aug: true
+use_synthetic: true
+synthetic_dir: "data/synthetic/hazelnut"
+few_shot_n: null
+epochs: 30
+batch_size: 32
+lr: 1.0e-4
