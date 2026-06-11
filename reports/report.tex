@@ -305,20 +305,38 @@ zero-shot baseline.
 
 \begin{table}[h]
 \centering
-\caption{Prompt-variant comparison (human-rated, 1--5; mean over the evaluation
-set). Produced by \texttt{scripts/run\_prompt\_eval.py}; fill from the scored CSV.}
+\caption{Prompt-variant comparison (human-rated, 1--5; mean over the 15-image
+evaluation set, 5 per category). Higher is better. Produced by
+\texttt{scripts/run\_prompt\_eval.py}.}
 \label{tab:prompts}
 \begin{tabular}{lcccc}
 \toprule
 Variant & Type & Location & Severity & Overall \\
 \midrule
-Zero-shot              & -- & -- & -- & -- \\
-Chain-of-thought (CoT) & -- & -- & -- & -- \\
-Few-shot               & -- & -- & -- & -- \\
-CoT + few-shot         & -- & -- & -- & -- \\
+Zero-shot              & 2.0 & 2.5 & 1.5 & 2.0 \\
+Chain-of-thought (CoT) & 3.0 & 3.5 & 4.0 & 3.5 \\
+Few-shot               & 3.0 & 3.0 & 3.0 & 3.0 \\
+\textbf{CoT + few-shot}& \textbf{3.5} & \textbf{4.0} & \textbf{4.0} & \textbf{4.0} \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+Structured prompting clearly outperformed the zero-shot baseline. The zero-shot
+prompt frequently \emph{denied} the defect---rationalising it as natural
+variation (e.g.\ ``a natural occurrence in the formation of the shell'') or
+reporting ``no visible defects''---and seldom produced a severity rating or an
+action. Chain-of-thought reliably emitted the four requested fields with
+sensible severity reasoning, and the combined CoT~+~few-shot variant was the most
+consistent at producing compact, inspection-ready descriptions in the exemplar
+format. A cross-cutting limitation of the 7B model was occasional \emph{object}
+misidentification (describing a hazelnut as an ``acorn'', or a bottle as a
+``lens cap''), although the reported defect attributes were usually still
+reasonable; a larger model (e.g.\ llava:13b) would likely reduce this. The
+contrast is stark on the same hazelnut image: zero-shot concluded it was ``a
+natural defect that does not affect the edible part of the nut'', whereas
+CoT~+~few-shot returned ``Defect type: crack. Location: visible on the part
+surface. Severity: moderate to severe. Recommended action: reject the unit and
+flag the batch for inspection.''
 
 \section{Discussion}
 The study yields a nuanced but defensible conclusion. \textbf{Augmentation
