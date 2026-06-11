@@ -13,13 +13,54 @@
 
 \graphicspath{{figures/}}
 
-\title{\textbf{GAN/Diffusion-Augmented Manufacturing Defect Detection}\\
-\large An empirical study on the MVTec~AD dataset}
-\author{Advanced AI Module Project}
-\date{\today}
-
 \begin{document}
-\maketitle
+
+% ----------------------------- Title page ------------------------------ %
+\begin{titlepage}
+\centering
+\vspace*{1.2cm}
+
+% University logo. Save the Ruhuna crest as reports/figures/ruhuna_logo.png;
+% until then a placeholder box is shown so the document still compiles.
+\IfFileExists{figures/ruhuna_logo.png}
+  {\includegraphics[width=0.20\textwidth]{figures/ruhuna_logo.png}}
+  {\framebox[0.20\textwidth]{\parbox[c][0.20\textwidth][c]{0.18\textwidth}%
+     {\centering\footnotesize University\\ logo}}}
+\\[1.6cm]
+
+{\LARGE\bfseries GAN/Diffusion-Augmented Manufacturing\\[2pt]
+Defect Detection on the MVTec AD Dataset\par}
+\vspace{1.2cm}
+
+{An undergraduate project report submitted to the\par}
+\vspace{0.9cm}
+
+{\large Department of Electrical and Information Engineering\\[2pt]
+Faculty of Engineering\\[2pt]
+University of Ruhuna\\[2pt]
+Sri Lanka\par}
+\vspace{1.2cm}
+
+{in partial fulfillment of the requirements for the\par}
+\vspace{0.7cm}
+
+{\large\bfseries Degree of the Bachelor of the Science of Engineering Honours\par}
+\vspace{1.4cm}
+
+{by\par}
+\vspace{0.7cm}
+
+{\normalsize
+\begin{tabular}{l@{\hspace{1em}}c@{\hspace{1em}}l}
+Ahamed N.F.F.     & -- & EG/2021/4390 \\
+Rifath M.F.M.     & -- & EG/2021/4760 \\
+Nafla M.N.P.      & -- & EG/2021/4687 \\
+Hathnagoda H.I.P. & -- & EG/2021/4544 \\
+\end{tabular}\par}
+
+\vfill
+\end{titlepage}
+% --------------------------- End title page ----------------------------- %
 
 \begin{abstract}
 Manufacturing defects are rare, so defect classifiers trained on the resulting
