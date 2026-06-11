@@ -1,0 +1,15 @@
+# Combined all-category model: one classifier over bottle+hazelnut+carpet, with
+# diffusion-synthesised defects mixed in per category. Produces a single
+# checkpoint (experiments/checkpoints/all_ours.pt) that the demo can use for any
+# image without switching models. (Member 3)
+run_name: "all_ours"
+category: ["bottle", "hazelnut", "carpet"]
+backbone: "resnet50"
+traditional_aug: true
+use_synthetic: true
+synthetic_root: "data/synthetic"   # per-category synthetic dirs live here
+synthetic_n: "balance"             # balance each category's defects to its good count
+few_shot_n: null
+epochs: 30
+batch_size: 32
+lr: 1.0e-4

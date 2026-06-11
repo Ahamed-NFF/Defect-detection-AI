@@ -33,7 +33,7 @@ import yaml
 from tqdm import tqdm
 
 from src.classifier.model import build_classifier
-from src.data.dataset import build_loaders
+from src.data.dataset import build_loaders, build_loaders_multi
 from src.eval.metrics import best_threshold, classification_metrics
 
 SEED = 42
@@ -112,19 +112,30 @@ def train(config, device="auto", limit_batches=None, num_workers=0,
 
     synthetic_dir = config.get("synthetic_dir") if use_synthetic else None
     synthetic_n = config.get("synthetic_n") if use_synthetic else None
+    multi = isinstance(category, (list, tuple))  # combined all-category model
+    cat_label = "+".join(category) if multi else category
 
-    print(f"=== {run_name} | category={category} | device={dev} ===")
+    print(f"=== {run_name} | category={cat_label} | device={dev} ===")
     print(f"    traditional_aug={traditional_aug} use_synthetic={use_synthetic} "
           f"synthetic_dir={synthetic_dir} synthetic_n={synthetic_n} "
           f"few_shot_n={few_shot_n} epochs={epochs} batch_size={batch_size} lr={lr}")
     print(f"    freeze_backbone={freeze_backbone} class_weighted={class_weighted} "
           f"tune_threshold={tune_threshold}")
 
-    train_loader, val_loader, test_loader = build_loaders(
-        category, batch_size=batch_size, few_shot_n=few_shot_n,
-        synthetic_dir=synthetic_dir, synthetic_n=synthetic_n, data_root=data_root,
-        traditional_aug=traditional_aug, num_workers=num_workers,
-    )
+    if multi:
+        train_loader, val_loader, test_loader = build_loaders_multi(
+            category, batch_size=batch_size, few_shot_n=few_shot_n,
+            use_synthetic=use_synthetic,
+            synthetic_root=config.get("synthetic_root", "data/synthetic"),
+            synthetic_n=synthetic_n if synthetic_n is not None else "balance",
+            data_root=data_root, traditional_aug=traditional_aug, num_workers=num_workers,
+        )
+    else:
+        train_loader, val_loader, test_loader = build_loaders(
+            category, batch_size=batch_size, few_shot_n=few_shot_n,
+            synthetic_dir=synthetic_dir, synthetic_n=synthetic_n, data_root=data_root,
+            traditional_aug=traditional_aug, num_workers=num_workers,
+        )
     print(f"    train={len(train_loader.dataset)} "
           f"({train_loader.dataset.class_counts()}) | "
           f"val={len(val_loader.dataset)} | test={len(test_loader.dataset)}")
@@ -188,7 +199,7 @@ def train(config, device="auto", limit_batches=None, num_workers=0,
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     result = {
         "run_name": run_name,
-        "category": category,
+        "category": cat_label,
         "config": config,
         "device": str(dev),
         "epochs_run": epochs,

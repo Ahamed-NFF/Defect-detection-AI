@@ -29,7 +29,7 @@ import random
 from pathlib import Path
 
 from PIL import Image
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import ConcatDataset, DataLoader, Dataset
 import torchvision.transforms as T
 
 from .augment import train_transforms
@@ -218,4 +218,48 @@ def build_loaders(category, batch_size=32, few_shot_n=None, synthetic_dir=None,
                             num_workers=num_workers)
     test_loader = DataLoader(test_ds, batch_size=batch_size, shuffle=False,
                              num_workers=num_workers)
+    return train_loader, val_loader, test_loader
+
+
+class _ConcatDefects(ConcatDataset):
+    """ConcatDataset that keeps a class_counts() summed across its children."""
+
+    def class_counts(self) -> dict[str, int]:
+        total = {"good": 0, "defect": 0}
+        for d in self.datasets:
+            for k, v in d.class_counts().items():
+                total[k] += v
+        return total
+
+
+def build_loaders_multi(categories, batch_size=32, few_shot_n=None,
+                        use_synthetic=False, synthetic_root="data/synthetic",
+                        synthetic_n="balance", data_root="data/raw",
+                        img_size=DEFAULT_IMG_SIZE, traditional_aug=True, num_workers=0):
+    """Train/val/test loaders pooled across several categories (one combined model).
+
+    Each category is split independently (its own deterministic 70/15/15) and the
+    matching splits are concatenated, so every category is represented in train,
+    val, and test. For the augmented runs, each category's own synthetic dir
+    (synthetic_root/<category>) is mixed into its train split and balanced
+    separately via synthetic_n.
+    """
+    train_tf = train_transforms(img_size=img_size, traditional_aug=traditional_aug)
+    eval_tf = _default_transform(img_size=img_size)
+
+    train_sets, val_sets, test_sets = [], [], []
+    for cat in categories:
+        root = Path(data_root) / cat
+        syn_dir = str(Path(synthetic_root) / cat) if use_synthetic else None
+        train_sets.append(DefectDataset(root, "train", train_tf, few_shot_n=few_shot_n,
+                                        synthetic_dir=syn_dir, synthetic_n=synthetic_n))
+        val_sets.append(DefectDataset(root, "val", eval_tf))
+        test_sets.append(DefectDataset(root, "test", eval_tf))
+
+    train_loader = DataLoader(_ConcatDefects(train_sets), batch_size=batch_size,
+                              shuffle=True, num_workers=num_workers, drop_last=False)
+    val_loader = DataLoader(_ConcatDefects(val_sets), batch_size=batch_size,
+                            shuffle=False, num_workers=num_workers)
+    test_loader = DataLoader(_ConcatDefects(test_sets), batch_size=batch_size,
+                             shuffle=False, num_workers=num_workers)
     return train_loader, val_loader, test_loader
