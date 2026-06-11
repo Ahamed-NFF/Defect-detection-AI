@@ -1,0 +1,6 @@
+{
+  "real": "data/raw/hazelnut/test",
+  "fake": "data/synthetic/hazelnut",
+  "mode": "clean",
+  "fid": 75.27159446992732
+}

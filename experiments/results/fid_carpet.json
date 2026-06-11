@@ -1,0 +1,6 @@
+{
+  "real": "data/raw/carpet/test",
+  "fake": "data/synthetic/carpet",
+  "mode": "clean",
+  "fid": 134.63044710003973
+}

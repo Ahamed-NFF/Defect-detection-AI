@@ -1,0 +1,69 @@
+{
+  "run_name": "bottle_fewshot3_ours",
+  "category": "bottle",
+  "config": {
+    "run_name": "bottle_fewshot3_ours",
+    "category": "bottle",
+    "backbone": "resnet50",
+    "traditional_aug": true,
+    "use_synthetic": true,
+    "synthetic_dir": "data/synthetic/bottle",
+    "synthetic_n": "balance",
+    "few_shot_n": 3,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001
+  },
+  "device": "cuda",
+  "epochs_run": 30,
+  "best_val_auroc": 1.0,
+  "threshold": 0.017400703945895657,
+  "checkpoint": "experiments/checkpoints/bottle_fewshot3_ours.pt",
+  "metrics": {
+    "accuracy": 0.9555555555555556,
+    "per_class": {
+      "good": {
+        "precision": 0.9459459459459459,
+        "recall": 1.0,
+        "f1": 0.9722222222222222,
+        "support": 35
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.8,
+        "f1": 0.8888888888888888,
+        "support": 10
+      }
+    },
+    "macro": {
+      "precision": 0.972972972972973,
+      "recall": 0.9,
+      "f1": 0.9305555555555556
+    },
+    "auroc": 1.0
+  },
+  "metrics_at_0p5": {
+    "accuracy": 0.8888888888888888,
+    "per_class": {
+      "good": {
+        "precision": 0.875,
+        "recall": 1.0,
+        "f1": 0.9333333333333333,
+        "support": 35
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1": 0.6666666666666666,
+        "support": 10
+      }
+    },
+    "macro": {
+      "precision": 0.9375,
+      "recall": 0.75,
+      "f1": 0.8
+    },
+    "auroc": 1.0
+  },
+  "timestamp": "2026-06-11T16:48:59"
+}
