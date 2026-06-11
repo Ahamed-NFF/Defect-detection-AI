@@ -11,6 +11,13 @@ experiments/checkpoints/
 # intentionally tracked (small) so they sync between the GPU and CPU machines
 # for report writing. The big artifacts above stay out of git.
 
+# LaTeX build artifacts (report.tex is the tracked source)
+reports/*.aux
+reports/*.log
+reports/*.out
+reports/*.toc
+reports/*.pdf
+
 # Python
 __pycache__/
 *.pyc
