@@ -207,9 +207,17 @@ Category & Run & Def-P & Def-R & Def-F1 & Macro-F1 & AUROC \\
  & Baseline 1 & 1.000 & 0.909 & 0.952 & 0.972 & 1.000 \\
  & Baseline 2 & 0.917 & 1.000 & 0.957 & 0.974 & 1.000 \\
  & Ours       & 1.000 & 1.000 & \textbf{1.000} & 1.000 & 1.000 \\
+\midrule
+\textit{all} & Combined (ours) & 1.000 & 0.971 & 0.986 & 0.991 & 1.000 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+A single classifier trained jointly over all three categories
+(\textit{Combined}, last row) reaches defect-F1~0.986 / AUROC~1.0 on the pooled
+180-image test set---within a point of the per-category models. This shows the
+method yields \emph{one deployable inspector} that handles every product type,
+rather than three separate models, which is how the demo tool is served.
 
 \subsection{Synthetic quality tracks downstream benefit}
 Diffusion augmentation's gain \emph{over classical augmentation} (Ours vs
