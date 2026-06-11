@@ -1,0 +1,112 @@
+image,variant,output,error,type_accuracy_1to5,location_accuracy_1to5,severity_accuracy_1to5,overall_1to5,notes
+data/raw/bottle/test/broken_large/002-94.png,zero_shot,"The image shows an object with a prominent central hole, which appears to be a keyhole or some kind of opening for inserting items such as keys or tools. This feature suggests the object is designed to secure a mechanism within it. However, there are no visible defects that can be observed in this image. It looks like a typical item that may be used as a lock or attachment point, with no signs of damage or abnormalities.",,,,,,
+data/raw/bottle/test/broken_large/002-94.png,cot,"Firstly, the defect appears to be a void or imperfection in the metal component, possibly within the internal threading of the circular hole. Secondly, this is located near the opening of the part, which seems to be where it might be connected to another component.
+
+In terms of severity, it's difficult to definitively assess without more context about how this part functions and what its tolerances are. However, if the void is not too large or disruptive to the functionality of the part, it might be considered a minor defect. If the void could cause issues with the component's function or integrity, especially if it's within the critical area where threads would engage, it could be rated as moderate or severe.
+
+As for the inspector action, depending on the context and the nature of the part, it might need further examination to determine if the defect is acceptable or if it requires rework or replacement. If the defect is acceptable within certain manufacturing standards or quality control specifications, no action may be required. However, if the defect impacts the functionality or safety of the product, appropriate steps should be taken to correct or discard the part as needed.",,,,,,
+data/raw/bottle/test/broken_large/002-94.png,fewshot,"Defect Type: Crack
+
+Location: Visible on the surface of the bottle
+
+Severity: Mild
+
+Recommended Action: Reject and flag for inspection",,,,,,
+data/raw/bottle/test/broken_large/002-94.png,cot_fewshot,"Defect Type: Chipped Paint
+
+Location: Visible on the part surface.
+
+Severity: Mild to Moderate
+
+Recommended Action: Flag the batch for inspection and monitor for any further deterioration. If it is deemed acceptable for the intended use, continue with production; if not, consider re-engineering to improve durability or quality control measures to prevent such occurrences in future batches.",,,,,,
+data/raw/bottle/test/broken_large/003-94.png,zero_shot,"The image shows two views of what appears to be a bottle cap. There is no obvious defect visible from these perspectives. If there is a specific area of concern, please provide more details or angles of the item for inspection.",,,,,,
+data/raw/bottle/test/broken_large/003-94.png,cot,"The image shows a close-up of a lens cap with a black object in the center. Based on the visual information provided:
+
+1. Defect Type: The defect appears to be a foreign object embedded in the transparent material, possibly glass or plastic, which is unusual for a lens cap intended for optical use. This could compromise the functionality of the lens cap as it would obstruct light and potentially scratch the lens surface.
+2. Location: The black object is located towards the center of the image, which is typically the middle of the lens cap.
+3. Severity: The presence of a foreign object in a lens cap can be considered severe, as it may cause damage to the lens or hinder its performance.
+4. Inspector Action: As the defect is significant and could compromise the integrity and function of the part, an inspector should document this issue in detail and report it to the appropriate parties for investigation and remediation. The part should be removed from production and evaluated to ensure that similar issues do not occur in future production runs. If the cap is intended for use, it should be discarded or returned to the manufacturer for repair or replacement.",,,,,,
+data/raw/bottle/test/broken_large/003-94.png,fewshot,"Defect type: Misalignment.
+
+Location: Visible on the edge of the bottle cap.
+
+Severity: Mild.
+
+Recommended action: Inspect further for consistency and consider whether it is a potential issue that may impact functionality or presentation; if deemed acceptable, accept the part.",,,,,,
+data/raw/bottle/test/broken_large/003-94.png,cot_fewshot,"Defect Type: Opening
+
+Location: Middle of the item, between two rings or sections
+
+Severity: Moderate to Severe
+
+Recommended Action: Reject the unit and flag the batch for inspection",,,,,,
+data/raw/bottle/test/broken_large/004-94.png,zero_shot,"The image shows a close-up of what appears to be the inner part of an oven or appliance, possibly viewed through a lens or camera. There is a notable defect: a missing piece or component located near the center of the photo, which would normally be expected to be there, indicating it has been accidentally dropped out or removed during manufacturing.",,,,,,
+data/raw/bottle/test/broken_large/004-94.png,cot,"Defect Type: Circular Misalignment
+
+Location: At the top of the circular black section.
+
+Severity: Minor - This can be considered a cosmetic defect unless it affects performance or function. It may not affect the proper use of the object, but it is noticeable and could be undesirable in some applications.
+
+Recommended Action: The inspector should document this as a minor cosmetic defect and recommend that additional checks are performed to ensure there are no similar issues elsewhere on the product. If it is deemed to be acceptable for the product's intended use, no further action may be necessary.",,,,,,
+data/raw/bottle/test/broken_large/004-94.png,fewshot,"Defect Type: Irregular Shape
+
+Location: Top of the bottle, in the neck area
+
+Severity: Severe
+
+Recommended Action: Reject the unit and flag the batch for inspection.",,,,,,
+data/raw/bottle/test/broken_large/004-94.png,cot_fewshot,"Defect Type: Axis Alignment
+
+Location: Visible on the edge of the cylindrical hole
+
+Severity: Moderate to Severe - it may indicate misalignment or damage to the axis mechanism within the component
+
+Recommended Action: Assess for potential impact on functionality, if any, and decide whether to further investigate, repair (if feasible), or discard the part depending on the assessment.",,,,,,
+data/raw/bottle/test/broken_large/005-94.png,zero_shot,"The image shows a bottle with several apparent defects:
+1. There's a crack along the neck of the bottle, which could affect its structural integrity and leakage.
+2. A black substance is leaking out from one end of the bottle cap, indicating poor seal or damage to the closure mechanism. This can lead to product spoilage or loss over time.",,,,,,
+data/raw/bottle/test/broken_large/005-94.png,cot,"Based on the image provided, here is a step-by-step analysis:
+
+1. Defect Type: There is a cosmetic defect visible in the image. This appears to be a crack or scratch running along the edge of what looks like a bottle or container.
+
+2. Location: The defect is located near the top of the item, along the side where it seems to have started from the top and gone down slightly before stopping at that point.
+
+3. Severity: The defect appears minor to moderate in severity, as it does not significantly affect the structural integrity of the object and its primary function. However, if this were a critical component, such a crack could be considered more severe due to safety concerns.
+
+4. Inspector Action: Given the cosmetic nature of the defect and its location, the inspector should document the defect for quality control purposes. If it's a minor issue that does not impact performance or safety, no further action may be required, depending on the product's intended use and tolerances. If the defect is deemed unacceptable based on the product's specifications, then additional investigation to determine its cause and if there are any other similar defects present in the batch would be necessary.
+
+Please note that this analysis is based solely on the image provided and does not consider any context beyond what can be seen in the picture.",,,,,,
+data/raw/bottle/test/broken_large/005-94.png,fewshot,"Defect Type: Broken Large
+
+Location: Visible on the surface of the part
+
+Severity: Moderate to Severe
+
+Recommended Action: Reject the unit and flag the batch for inspection",,,,,,
+data/raw/bottle/test/broken_large/005-94.png,cot_fewshot,"Defect type: broken large.
+
+Location: visible on the inside of a cylindrical container.
+
+Severity: moderate to severe.
+
+Recommended action: reject the unit and flag the batch for inspection.",,,,,,
+data/raw/bottle/test/broken_large/006-94.png,zero_shot,"There is a clear visual defect in the center of the image. It appears to be a hole or opening without any part or material filling it, which suggests an incomplete assembly or a missing component that should have been present in the object. This could indicate a design flaw, a manufacturing error, or damage sustained by the item.",,,,,,
+data/raw/bottle/test/broken_large/006-94.png,cot,"Defect Type: Geometrical
+
+Location: Center of the image, where the dark black hole would be.
+
+Severity: Severe - This could be a significant issue if it affects the functionality of the part. It appears to be a hole in the center of the object without any visible reason or purpose for its existence.
+
+Inspector Action: Immediate inspection and analysis are needed to understand the cause and impact of this defect. If it's critical to the function of the part, it should be flagged for rejection or returned to manufacturing for corrective action to ensure safety and quality standards are met.",,,,,,
+data/raw/bottle/test/broken_large/006-94.png,fewshot,"Defect type: cracks.
+
+Location: visible along the rim and top of the bottle cap.
+
+Severity: moderate to severe. The cracks suggest a potential structural weakness that may affect the functionality or integrity of the product.",,,,,,
+data/raw/bottle/test/broken_large/006-94.png,cot_fewshot,"Defect type: broken large.
+
+Location: visible on the part surface.
+
+Severity: moderate to severe.
+
+Recommended action: reject the unit and flag the batch for inspection.",,,,,,

@@ -1,0 +1,111 @@
+image,variant,output,error,type_accuracy_1to5,location_accuracy_1to5,severity_accuracy_1to5,overall_1to5,notes
+data/raw/hazelnut/test/crack/002-53.png,zero_shot,"The nut in the image appears to have a slight asymmetry on one side, which is a common natural characteristic of hazelnuts due to their growth pattern. This variation is not an indication of a manufacturing defect but rather a natural occurrence in the formation of the shell around the seed.",,,,,,
+data/raw/hazelnut/test/crack/002-53.png,cot,"Type: Crack
+
+Location: Top left corner of nut shell
+
+Severity: Moderate - A sizable but not full length crack, which could compromise the integrity of the shell if unaddressed and could lead to issues with seed extraction or germination potential.
+
+Action: Further inspection with a loupe or higher magnification would be necessary to determine if the crack is part of an intrinsic pattern that may affect the nut's functionality or if it indicates a larger issue such as improper handling or storage. If deemed significant, consider reporting this batch for review and potential recall.",,,,,,
+data/raw/hazelnut/test/crack/002-53.png,fewshot,"Defect Type: Crack
+
+Location: Visible on the outer shell of the acorn.
+
+Severity: Moderate to Severe
+
+Recommended Action: Reject the acorn and flag the batch for inspection.",,,,,,
+data/raw/hazelnut/test/crack/002-53.png,cot_fewshot,"Defect type: crack
+
+Location: visible on the surface of the hazelnut shell
+
+Severity: moderate to severe, as there is a significant crack and one large chunk missing from the outer shell, potentially affecting the integrity or freshness of the nut inside.
+
+Recommended action: The nut should be carefully inspected for any potential damage or contamination within the shell, especially if it is intended for consumption. If deemed safe to eat, it may be salvageable and can be stored as long as there are no signs of mold or insect infestation. However, if structural integrity is a concern, it should be discarded and considered for further examination of the batch to ensure no other nuts in the same vicinity are affected by the same condition.",,,,,,
+data/raw/hazelnut/test/crack/003-53.png,zero_shot,"The image displays a hazelnut with a noticeable crack running through the middle, which is considered a natural defect that does not affect the edible part of the nut and may not be considered a manufacturing defect per se. However, if we consider the context of manufacturing quality control, there might be other factors to consider such as the condition of the nut's outer shell, which should be intact without any signs of damage or contamination. Additionally, the nut is resting on a surface that appears to have a crack in it, which could be unrelated to the hazelnut but may need to be addressed if it's part of the manufacturing process or if the hazelnut itself has been cracked during transportation or handling.",,,,,,
+data/raw/hazelnut/test/crack/003-53.png,cot,"Based on the image provided, here's a step-by-step inspection:
+
+1. Defect Type: This appears to be a split in the casing of the nut, which might affect the functionality or appearance of the nut if not properly handled.
+
+2. Location: The split is located on the top surface of the nut, near the stem end.
+
+3. Severity: The split seems to be moderate, as it does not entirely open the casing but could cause issues when trying to shell or store the nut if left unattended.
+
+4. Inspector Action: Given the moderate severity and the potential impact on functionality or presentation, it would be advisable for an inspector to remove any loose fragments from the split and then carefully reseal the casing with appropriate adhesives or tape to prevent further splitting. The nut should also be checked for additional defects, as a split can sometimes indicate a weakening of the shell that could lead to other issues. If multiple nuts are affected, it would be prudent to investigate whether there is a broader issue in the manufacturing process that needs to be addressed to prevent future occurrences.",,,,,,
+data/raw/hazelnut/test/crack/003-53.png,fewshot,"Defect type: split
+
+Location: through the center of the nut, dividing it into two halves.
+
+Severity: severe. The crack is deep and appears to weaken the structure, potentially compromising the integrity of the nut. This might impact its usefulness for consumption or processing purposes.",,,,,,
+data/raw/hazelnut/test/crack/003-53.png,cot_fewshot,"Defect type: crack.
+
+Location: visible on the part surface.
+
+Severity: moderate to severe.
+
+Recommended action: reject the unit and flag the batch for inspection.",,,,,,
+data/raw/hazelnut/test/crack/004-53.png,zero_shot,"The image displays an acorn, exhibiting a slight asymmetry in its form. The upper side of the acorn is more rounded than the lower side, which is slightly elongated. This could be seen as a natural imperfection rather than a manufacturing defect. Acorns often have subtle variations in shape and size due to their organic growth process.",,,,,,
+data/raw/hazelnut/test/crack/004-53.png,cot,"Defect Type: Misshapen nut shell
+
+Defect Location: Inner shell of walnut, specifically the seam in the center where two halves would meet.
+
+Severity Estimate: Moderate
+
+Recommended Inspection Action: Inform the quality control team to conduct a thorough inspection of the entire batch for similar defects and recommend that affected nuts be removed from the supply chain before distribution to ensure consumer safety and product quality. Additionally, assess if this is a recurring issue in the manufacturing process and recommend measures to prevent such defects in future production runs.",,,,,,
+data/raw/hazelnut/test/crack/004-53.png,fewshot,"Defect type: cracked shell.
+
+Location: The split is located on the side of the nut, visible as a seam or crack running from one end to another along the length of the nut's body.
+
+Severity: Moderate.",,,,,,
+data/raw/hazelnut/test/crack/004-53.png,cot_fewshot,"Defect type: crack.
+
+Location: visible on the side surface of the nut, near the bottom.
+
+Severity: moderate to severe, suggesting potential breakage or weakened structure.
+
+Recommended action: Reject the unit and flag the batch for inspection, as this could compromise the integrity and freshness of other nuts in the batch.",,,,,,
+data/raw/hazelnut/test/crack/005-53.png,zero_shot,"The image depicts a walnut, which is a naturally occurring seed. If you're looking for artificial or intentional ""defects,"" none can be found on this walnut. It appears to be a typical walnut with its hard shell and the internal half with two lobes holding the edible nut. No signs of cracks, holes, or other types of defect are visible here.",,,,,,
+data/raw/hazelnut/test/crack/005-53.png,cot,"Defect Type: Crack
+
+Defect Location: Top left corner of the casing.
+
+Severity: Moderate - It is a noticeable crack that could potentially weaken the structure or lead to more severe damage if left unaddressed.
+
+Inspector Action:
+1. Document the defect in detail, including location and severity.
+2. Notify the responsible party of the defect.
+3. Assess whether the part can still be used safely without exacerbating the crack or recommend disposal if it cannot be repaired.
+4. If repair is feasible, consider implementing a preventive measure to avoid similar cracks in the future, such as improved manufacturing processes or material selection.",,,,,,
+data/raw/hazelnut/test/crack/005-53.png,fewshot,"Defect type: crack
+
+Location: visible on the side of the walnut halve
+
+Severity: moderate
+
+Recommended action: Further investigation to determine if the crack extends deeper and, if necessary, remove and replace affected part(s).",,,,,,
+data/raw/hazelnut/test/crack/005-53.png,cot_fewshot,"Defect type: Crack
+
+Location: The visible crack is in the nut shell on one side of the acorn.
+
+Severity: Moderate to severe. The crack appears deep and may compromise the integrity and durability of the nut shell, which could lead to leakage or breakage over time.
+
+Recommended action: Reject this unit and flag the batch for inspection. It is important to ensure that the quality standard for nuts remains consistent and that damaged products do not make it through the quality control process to avoid potential harm to consumers who might ingest cracked or contaminated nuts.",,,,,,
+data/raw/hazelnut/test/crack/006-53.png,zero_shot,"The image shows a nut with its shell cracked open, revealing the interior. There is no obvious manufacturing defect on the nut itself; it appears to be of standard size and shape without any visible irregularities or deformations that would indicate a defect. If there are defects, they may not be apparent in this image or require more context or detail to identify.",,,,,,
+data/raw/hazelnut/test/crack/006-53.png,cot,"Defect Type: Crack
+
+Location: Center of the nut, starting from the front and extending through to the back.
+
+Severity: Moderate
+
+Inspector Action: The crack is a moderately severe defect as it extends across the width of the nut, potentially affecting its integrity and functionality. It would be advisable for quality control to check if there are other cracks or irregularities in this nut or any other nuts in the batch. If this appears isolated and within acceptable tolerances, no immediate action may be required. However, if it is part of a pattern, further investigation into the root cause of this defect would be recommended to prevent future occurrences.",,,,,,
+data/raw/hazelnut/test/crack/006-53.png,fewshot,"Defect Type: Damage
+
+Location: The top of the nut has been cracked open.
+
+Severity: Severe - The nut is completely split and broken apart, making it unusable or compromised for consumption.",,,,,,
+data/raw/hazelnut/test/crack/006-53.png,cot_fewshot,"Defect type: crack.
+
+Location: The right side of the acorn where two sections meet, visible on the surface.
+
+Severity: Moderate to severe due to its size and position.
+
+Recommended action: Reject the nut for further inspection or quality control, as it may indicate structural integrity issues or a history of stress or damage.",,,,,,

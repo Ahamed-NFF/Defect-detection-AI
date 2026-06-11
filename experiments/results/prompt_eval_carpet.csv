@@ -1,0 +1,99 @@
+image,variant,output,error,type_accuracy_1to5,location_accuracy_1to5,severity_accuracy_1to5,overall_1to5,notes
+data/raw/carpet/test/color/002-59.png,zero_shot,"The image shows a fabric with what appears to be a small hole or damage, particularly noticeable near the bottom right corner. This could indicate a defect such as a snag, tear, or stitch issue that would need attention during the quality control process.",,,,,,
+data/raw/carpet/test/color/002-59.png,cot,"Type: Lack of uniformity
+
+Location: Top right corner
+
+Severity: Minor",,,,,,
+data/raw/carpet/test/color/002-59.png,fewshot,"Defect type: texture
+
+Location: Central area of fabric
+
+Severity: Moderate
+
+Recommended action: Reject the fabric and flag the batch for further inspection to ensure consistent quality.",,,,,,
+data/raw/carpet/test/color/002-59.png,cot_fewshot,"Defect type: texture irregularity
+
+Location: visible on the surface of the textile material
+
+Severity: moderate to severe, depending on the expected uniformity of the weave and the potential impact on functionality or appearance
+
+Recommended action: inspect further for consistency, consider whether it impacts performance or aesthetics, then decide if it can be accepted as a minor defect or if rejection is necessary.",,,,,,
+data/raw/carpet/test/color/003-59.png,zero_shot,"The image shows a fabric with a visible defect: a hole or tear in the fabric, located near the center and towards the bottom of the image. This could be a potential issue for quality control in the product being inspected.",,,,,,
+data/raw/carpet/test/color/003-59.png,cot,"Defect Type: Tear
+
+Location: Centered in the image, slightly off-center, near the right edge.
+
+Severity: Moderate - The tear appears to be a significant breach that could compromise the integrity of the fabric if it's intended for a protective purpose. If it's decorative or not critical to its function, it might be considered minor, but for structural use, it is moderately severe.
+
+Action: Inspection should continue to check for additional tears or damage within the fabric. Depending on the extent of the damage and the intended purpose of the fabric, a decision would need to be made regarding whether repairs are feasible or if the entire piece needs to be replaced. The defect could also lead to further investigation into the manufacturing process that may have contributed to this tear.",,,,,,
+data/raw/carpet/test/color/003-59.png,fewshot,"Defect type: color variation.
+
+Location: The woven fabric of a material, possibly a curtain or textile, with visible weave patterns.
+
+Severity: Mild to moderate.
+
+Recommended action: If this is a quality inspection for manufacturing or retail, the recommendation would be to inspect the batch and potentially flag it for further examination or adjustment of production settings to ensure consistency in coloration.",,,,,,
+data/raw/carpet/test/color/003-59.png,cot_fewshot,"Defect type: color
+
+Location: visible on the fabric surface in the lower right corner
+
+Severity: mild to moderate
+
+Recommended action: flag for quality control check and possibly reinspection or adjustment if within acceptable quality standards",,,,,,
+data/raw/carpet/test/color/004-59.png,zero_shot,"The image shows a fabric with a visible black spot on it, which could be considered a defect as it deviates from the expected uniformity of the material.",,,,,,
+data/raw/carpet/test/color/004-59.png,cot,"Defect Type: Missing Material
+
+Location: The top center section of the fabric.
+
+Severity: Moderate - It's noticeable but might not significantly affect functionality if it's in a less critical area of the textile.
+
+Inspector Action: This defect is not severe enough to reject the entire piece, but additional checks should be performed to ensure that there are no more similar issues elsewhere on the fabric. If possible, attempt to repair or fill in the missing material to prevent further damage and maintain the integrity of the textile.",,,,,,
+data/raw/carpet/test/color/004-59.png,fewshot,"Defect type: color.
+
+Location: visible on the fabric surface.
+
+Severity: moderate to severe.
+
+Recommended action: reject the item and flag the production for inspection to ensure quality control is maintained.",,,,,,
+data/raw/carpet/test/color/004-59.png,cot_fewshot,"Defect type: color
+
+Location: visible on the cloth surface.
+
+Severity: moderate to severe. The color variation is not uniform and deviates from the standard pattern of the fabric. This could affect the appearance or possibly the function of the item if it's meant for use.
+
+Recommended action: reject the unit and flag the batch for inspection, as the non-uniformity in color might be indicative of a larger issue that could impact the quality of other items from the same batch.",,,,,,
+data/raw/carpet/test/color/005-59.png,zero_shot,"In the image provided, there is an observable manufacturing defect: a loose stitch. This can be seen where two pieces of fabric have not been properly sewn together, creating an area of separation between them.",,,,,,
+data/raw/carpet/test/color/005-59.png,cot,"Based on the image provided, here's a step-by-step inspection:
+
+1. Defect Type: There appears to be a knot visible in the fabric material. This is a common type of defect in woven textiles.
+
+2. Location: The knot is situated within the square mesh pattern and is approximately in the center of the image.
+
+3. Severity: Depending on the size, tightness, or impact on the product's appearance or function, this could be considered a moderate to severe defect if it is visible and disruptive to the intended fabric texture.
+
+4. Recommended Action: Since this appears to be an intentional weaving pattern (e.g., for strength) rather than an error in production, no further action would typically be required unless the knot's tightness or visibility is deemed unacceptable for the product's intended use or presentation. If it were a genuine defect, the inspector might recommend discussing with the manufacturer if the defect can be corrected or if it should be accepted as part of the manufacturing process.",,,,,,
+data/raw/carpet/test/color/005-59.png,fewshot,"The image shows a close-up of a fabric with interwoven threads, which resembles tweed material. A noticeable defect is a dark spot on the fabric surface. It appears as a small and irregular stain or marking that deviates from the expected pattern of uniformly colored threads. This type of defect might affect the appearance and quality of the product, possibly impacting its aesthetic appeal and potentially necessitating inspection or rejection if it falls within acceptable quality standards.",,,,,,
+data/raw/carpet/test/color/005-59.png,cot_fewshot,"Defect type: Color
+
+Location: Visible on the fabric surface
+
+Severity: Moderate to severe
+
+Recommended action: Reject the unit and flag the batch for inspection.",,,,,,
+data/raw/carpet/test/color/006-59.png,zero_shot,"The image provided appears to be of a fabric material with a textured appearance, possibly webbing or a similar mesh-like pattern. There is one noticeable defect: a hole or tear on the right side of the image, towards the top. This hole exposes the underlying material and could affect the integrity of the item made from this fabric.",,,,,,
+data/raw/carpet/test/color/006-59.png,cot,"Defect Type: Loop
+
+Location: Upper left corner of fabric, near top edge.
+
+Severity: Minor - This defect is not particularly large or disruptive to the overall pattern of the weave and will not hinder the functionality of the product.
+
+Action: For this minor defect, no further action would be necessary unless there is a strict standard in place that does not allow any visible defects, even minor ones. If that is the case, it could either be allowed as part of a 'first off the line' inspection or it could be rejected based on the quality control standards in use.",,,,,,
+data/raw/carpet/test/color/006-59.png,fewshot,"The image shows a textured fabric with a noticeable black mark or stain on it. The fabric has a woven pattern and appears to be of a mesh-like material, possibly a lining or backing for another product. The presence of the dark spot stands out against the lighter background of the fabric and is likely to be a defect in terms of appearance or cleanliness that would affect the acceptability of the item if it were intended for use without stains.",,,,,,
+data/raw/carpet/test/color/006-59.png,cot_fewshot,"Defect type: color
+
+Location: visible on the part surface.
+
+Severity: moderate to severe
+
+Recommended action: reject the unit and flag the batch for inspection.",,,,,,
