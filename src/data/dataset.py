@@ -106,15 +106,20 @@ class DefectDataset(Dataset):
             only) — the few-shot ablation lever.
         synthetic_dir: optional path to synthetic defect images mixed into the
             train split only (the diffusion-augmented "ours" runs).
+        synthetic_n: cap on how many synthetic images to mix in (train only).
+            int -> use at most that many; "balance" -> add just enough to bring
+            the defect count up to the good count (avoids flipping the imbalance
+            the other way); None -> use all synthetic images (legacy behaviour).
     """
 
     def __init__(self, root, split="train", transform=None,
-                 few_shot_n=None, synthetic_dir=None):
+                 few_shot_n=None, synthetic_dir=None, synthetic_n=None):
         self.root = Path(root)
         self.split = split
         self.transform = transform if transform is not None else _default_transform()
         self.few_shot_n = few_shot_n
         self.synthetic_dir = synthetic_dir
+        self.synthetic_n = synthetic_n
         self.label_names = LABEL_NAMES
 
         if split not in SPLIT_FRACTIONS:
@@ -149,6 +154,13 @@ class DefectDataset(Dataset):
                 samples = real_good + real_defect[: self.few_shot_n]
             if self.synthetic_dir is not None:
                 syn = _list_images(Path(self.synthetic_dir))
+                cap = self.synthetic_n
+                if cap == "balance":
+                    n_good = sum(1 for _, lab in samples if lab == GOOD)
+                    n_defect = sum(1 for _, lab in samples if lab == DEFECT)
+                    cap = max(0, n_good - n_defect)  # fill defects up to good count
+                if cap is not None:
+                    syn = syn[:cap]
                 samples += [(p, DEFECT) for p in syn]
 
         return samples
@@ -172,7 +184,7 @@ class DefectDataset(Dataset):
 
 
 def build_loaders(category, batch_size=32, few_shot_n=None, synthetic_dir=None,
-                  data_root="data/raw", img_size=DEFAULT_IMG_SIZE,
+                  synthetic_n=None, data_root="data/raw", img_size=DEFAULT_IMG_SIZE,
                   traditional_aug=True, num_workers=0, seed=SPLIT_SEED):
     """Return (train_loader, val_loader, test_loader) for a category.
 
@@ -181,6 +193,8 @@ def build_loaders(category, batch_size=32, few_shot_n=None, synthetic_dir=None,
         batch_size: loader batch size.
         few_shot_n: cap on real defect images in the train split (ablation).
         synthetic_dir: dir of synthetic defects to fold into the train split.
+        synthetic_n: cap on synthetic images (int) or "balance" to match the
+            good count; None uses all of them.
         data_root: where extracted categories live (default "data/raw").
         img_size: square resize edge length.
         traditional_aug: enable Baseline-2 flips/rotations/jitter on the train
@@ -193,7 +207,8 @@ def build_loaders(category, batch_size=32, few_shot_n=None, synthetic_dir=None,
     eval_tf = _default_transform(img_size=img_size)
 
     train_ds = DefectDataset(root, "train", train_tf,
-                             few_shot_n=few_shot_n, synthetic_dir=synthetic_dir)
+                             few_shot_n=few_shot_n, synthetic_dir=synthetic_dir,
+                             synthetic_n=synthetic_n)
     val_ds = DefectDataset(root, "val", eval_tf)
     test_ds = DefectDataset(root, "test", eval_tf)
 

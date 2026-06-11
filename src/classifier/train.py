@@ -106,15 +106,16 @@ def train(config, device="auto", limit_batches=None, num_workers=0,
     epochs = epochs_override if epochs_override is not None else config.get("epochs", 30)
 
     synthetic_dir = config.get("synthetic_dir") if use_synthetic else None
+    synthetic_n = config.get("synthetic_n") if use_synthetic else None
 
     print(f"=== {run_name} | category={category} | device={dev} ===")
     print(f"    traditional_aug={traditional_aug} use_synthetic={use_synthetic} "
-          f"synthetic_dir={synthetic_dir} few_shot_n={few_shot_n} "
-          f"epochs={epochs} batch_size={batch_size} lr={lr}")
+          f"synthetic_dir={synthetic_dir} synthetic_n={synthetic_n} "
+          f"few_shot_n={few_shot_n} epochs={epochs} batch_size={batch_size} lr={lr}")
 
     train_loader, val_loader, test_loader = build_loaders(
         category, batch_size=batch_size, few_shot_n=few_shot_n,
-        synthetic_dir=synthetic_dir, data_root=data_root,
+        synthetic_dir=synthetic_dir, synthetic_n=synthetic_n, data_root=data_root,
         traditional_aug=traditional_aug, num_workers=num_workers,
     )
     print(f"    train={len(train_loader.dataset)} "

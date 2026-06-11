@@ -6,6 +6,7 @@ backbone: "resnet50"
 traditional_aug: true
 use_synthetic: true
 synthetic_dir: "data/synthetic/bottle"
+synthetic_n: "balance"   # fill defects up to the good count (so few_shot_n matters)
 few_shot_n: 30
 epochs: 30
 batch_size: 32

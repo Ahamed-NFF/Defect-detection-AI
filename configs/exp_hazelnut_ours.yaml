@@ -5,6 +5,7 @@ backbone: "resnet50"
 traditional_aug: true
 use_synthetic: true
 synthetic_dir: "data/synthetic/hazelnut"
+synthetic_n: "balance"   # mix in only enough synthetic to match the good count
 few_shot_n: null
 epochs: 30
 batch_size: 32
