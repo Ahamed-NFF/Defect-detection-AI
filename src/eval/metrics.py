@@ -28,6 +28,31 @@ from sklearn.metrics import (
 LABEL_NAMES = {0: "good", 1: "defect"}
 
 
+def best_threshold(y_true, y_score) -> float:
+    """Threshold on P(defect) that maximises the defect-class F1 on this set.
+
+    Used to calibrate the operating point on the validation set instead of the
+    naive 0.5 — important here because the classes are imbalanced and AUROC
+    shows the scores separate well even when 0.5 collapses to all-"good".
+    Returns 0.5 if y_true has only one class.
+    """
+    y_true = list(y_true)
+    y_score = list(y_score)
+    if len(set(y_true)) < 2:
+        return 0.5
+    best_t, best_f1 = 0.5, -1.0
+    # candidate thresholds = the observed scores (plus a tiny epsilon band)
+    for t in sorted(set(y_score)):
+        tp = sum(1 for yt, s in zip(y_true, y_score) if s >= t and yt == 1)
+        fp = sum(1 for yt, s in zip(y_true, y_score) if s >= t and yt == 0)
+        fn = sum(1 for yt, s in zip(y_true, y_score) if s < t and yt == 1)
+        denom = 2 * tp + fp + fn
+        f1 = (2 * tp / denom) if denom > 0 else 0.0
+        if f1 > best_f1:
+            best_f1, best_t = f1, t
+    return float(best_t)
+
+
 def classification_metrics(y_true, y_pred, y_score=None):
     """Return a metrics dict for binary good(0)/defect(1) predictions.
 
