@@ -1,0 +1,10 @@
+# Extreme few-shot: 5 real defects, NO synthetic (the "without GAN" arm). (Member 3)
+run_name: "bottle_fewshot5"
+category: "bottle"
+backbone: "resnet50"
+traditional_aug: true
+use_synthetic: false
+few_shot_n: 5
+epochs: 30
+batch_size: 32
+lr: 1.0e-4

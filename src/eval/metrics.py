@@ -40,17 +40,28 @@ def best_threshold(y_true, y_score) -> float:
     y_score = list(y_score)
     if len(set(y_true)) < 2:
         return 0.5
-    best_t, best_f1 = 0.5, -1.0
-    # candidate thresholds = the observed scores (plus a tiny epsilon band)
-    for t in sorted(set(y_score)):
+
+    # Candidates = midpoints between consecutive observed scores (plus the two
+    # edges). Midpoints generalise better than landing exactly on a score.
+    uniq = sorted(set(y_score))
+    cands = [uniq[0] - 1e-6]
+    cands += [(a + b) / 2 for a, b in zip(uniq, uniq[1:])]
+    cands += [uniq[-1] + 1e-6]
+
+    def f1_at(t):
         tp = sum(1 for yt, s in zip(y_true, y_score) if s >= t and yt == 1)
         fp = sum(1 for yt, s in zip(y_true, y_score) if s >= t and yt == 0)
         fn = sum(1 for yt, s in zip(y_true, y_score) if s < t and yt == 1)
         denom = 2 * tp + fp + fn
-        f1 = (2 * tp / denom) if denom > 0 else 0.0
-        if f1 > best_f1:
-            best_f1, best_t = f1, t
-    return float(best_t)
+        return (2 * tp / denom) if denom > 0 else 0.0
+
+    scored = [(t, f1_at(t)) for t in cands]
+    best_f1 = max(f1 for _, f1 in scored)
+    # When the data is perfectly separable many thresholds tie at best_f1; pick
+    # the MEDIAN of the winners (most central -> best generalisation) instead of
+    # an extreme one that overfits a tiny validation set.
+    winners = sorted(t for t, f1 in scored if f1 >= best_f1 - 1e-9)
+    return float(winners[len(winners) // 2])
 
 
 def classification_metrics(y_true, y_pred, y_score=None):

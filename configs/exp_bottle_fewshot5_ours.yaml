@@ -1,0 +1,13 @@
+# Extreme few-shot: 5 real defects + diffusion-synthesized defects (the
+# "with GAN" arm). (Member 3)
+run_name: "bottle_fewshot5_ours"
+category: "bottle"
+backbone: "resnet50"
+traditional_aug: true
+use_synthetic: true
+synthetic_dir: "data/synthetic/bottle"
+synthetic_n: "balance"   # fill defects up to the good count (so few_shot_n matters)
+few_shot_n: 5
+epochs: 30
+batch_size: 32
+lr: 1.0e-4
