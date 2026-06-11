@@ -153,6 +153,21 @@ def evaluate_prompts(sample_images, variants=None, model="llava:7b",
         writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()) if rows else ["image"])
         writer.writeheader()
         writer.writerows(rows)
-    print(f"wrote {out} ({len(rows)} rows: {len(sample_images)} images x "
-          f"{len(variants)} variants). Fill in the score columns for the report.")
+
+    # Companion markdown: variant outputs grouped per image, for eyeballing and
+    # for pasting examples into the report.
+    md = out.with_suffix(".md")
+    by_img: dict[str, list] = {}
+    for r in rows:
+        by_img.setdefault(r["image"], []).append(r)
+    lines = ["# Prompt-variant outputs\n"]
+    for img, rs in by_img.items():
+        lines.append(f"\n## {Path(img).name}\n")
+        for r in rs:
+            text = r["output"] or f"_(error: {r['error']})_"
+            lines.append(f"- **{r['variant']}**: {text}")
+    md.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    print(f"wrote {out} and {md} ({len(rows)} rows: {len(sample_images)} images x "
+          f"{len(variants)} variants). Fill in the score columns in the CSV for the report.")
     return rows

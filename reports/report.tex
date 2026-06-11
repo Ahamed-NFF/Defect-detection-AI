@@ -288,6 +288,38 @@ classifier's decisions are grounded in the defect rather than spurious cues.
 \label{fig:gradcam}
 \end{figure}
 
+\subsection{Prompt engineering for inspector descriptions}
+Beyond detection, the tool generates natural-language descriptions of flagged
+defects using LLaVA, served locally via Ollama. To make this a systematic study
+rather than a single ad-hoc prompt, we compare four prompt variants that share a
+common inspector system prompt: \emph{zero-shot} (a plain instruction);
+\emph{chain-of-thought} (CoT: identify type $\rightarrow$ localise
+$\rightarrow$ rate severity $\rightarrow$ recommend an action); \emph{few-shot}
+(two worked image\,+\,answer exemplars supplied as prior turns); and their
+\emph{combination} (CoT~+~few-shot). Each variant is run over a fixed set of
+held-out defect images, and the outputs are scored by a human rater on a 1--5
+scale for defect-type accuracy, localisation accuracy, and severity accuracy
+(Table~\ref{tab:prompts}). Structured prompting (CoT, and especially CoT~+~few-shot)
+is expected to yield more consistent, inspection-ready descriptions than the
+zero-shot baseline.
+
+\begin{table}[h]
+\centering
+\caption{Prompt-variant comparison (human-rated, 1--5; mean over the evaluation
+set). Produced by \texttt{scripts/run\_prompt\_eval.py}; fill from the scored CSV.}
+\label{tab:prompts}
+\begin{tabular}{lcccc}
+\toprule
+Variant & Type & Location & Severity & Overall \\
+\midrule
+Zero-shot              & -- & -- & -- & -- \\
+Chain-of-thought (CoT) & -- & -- & -- & -- \\
+Few-shot               & -- & -- & -- & -- \\
+CoT + few-shot         & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Discussion}
 The study yields a nuanced but defensible conclusion. \textbf{Augmentation
 helps}: across all three categories the augmented model beats the no-augmentation
