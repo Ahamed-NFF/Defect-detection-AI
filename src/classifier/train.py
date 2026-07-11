@@ -33,7 +33,7 @@ import yaml
 from tqdm import tqdm
 
 from src.classifier.model import build_classifier
-from src.data.dataset import build_loaders, build_loaders_multi
+from src.data.dataset import build_loaders, build_loaders_lodo, build_loaders_multi
 from src.eval.metrics import best_threshold, classification_metrics
 
 SEED = 42
@@ -90,8 +90,16 @@ def train_one_epoch(net, loader, criterion, optimizer, device, limit_batches=Non
 
 
 def train(config, device="auto", limit_batches=None, num_workers=0,
-          data_root="data/raw", epochs_override=None):
-    """Run one experiment row end to end and write its results JSON."""
+          data_root="data/raw", epochs_override=None, holdout_defect_type=None):
+    """Run one experiment row end to end and write its results JSON.
+
+    holdout_defect_type: if set (here or via config["holdout_defect_type"]),
+    runs one LODO fold instead of the deprecated pooled split -- see
+    src.data.dataset's module docstring. A CLI-passed value here overrides
+    the config's. The effective run_name/results filename gets a
+    "__lodo_<type>" suffix so folds don't collide with each other or with
+    the non-LODO run of the same config.
+    """
     torch.manual_seed(SEED)
     dev = resolve_device(device)
 
@@ -115,14 +123,28 @@ def train(config, device="auto", limit_batches=None, num_workers=0,
     multi = isinstance(category, (list, tuple))  # combined all-category model
     cat_label = "+".join(category) if multi else category
 
+    holdout = holdout_defect_type if holdout_defect_type is not None else config.get("holdout_defect_type")
+    if holdout:
+        if multi:
+            raise SystemExit("LODO (holdout_defect_type) is not supported for combined multi-category runs")
+        run_name = f"{run_name}__lodo_{holdout}"
+
     print(f"=== {run_name} | category={cat_label} | device={dev} ===")
     print(f"    traditional_aug={traditional_aug} use_synthetic={use_synthetic} "
           f"synthetic_dir={synthetic_dir} synthetic_n={synthetic_n} "
           f"few_shot_n={few_shot_n} epochs={epochs} batch_size={batch_size} lr={lr}")
     print(f"    freeze_backbone={freeze_backbone} class_weighted={class_weighted} "
           f"tune_threshold={tune_threshold}")
+    if holdout:
+        print(f"    LODO fold: holdout_defect_type={holdout}")
 
-    if multi:
+    if holdout:
+        train_loader, val_loader, test_loader = build_loaders_lodo(
+            category, holdout, batch_size=batch_size, few_shot_n=few_shot_n,
+            synthetic_dir=synthetic_dir, synthetic_n=synthetic_n, data_root=data_root,
+            traditional_aug=traditional_aug, num_workers=num_workers,
+        )
+    elif multi:
         train_loader, val_loader, test_loader = build_loaders_multi(
             category, batch_size=batch_size, few_shot_n=few_shot_n,
             use_synthetic=use_synthetic,
@@ -197,10 +219,11 @@ def train(config, device="auto", limit_batches=None, num_workers=0,
           f"auroc={test_metrics['auroc']}  (defect_f1@0.5={metrics_at_0p5['per_class']['defect']['f1']:.4f})")
 
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    result_config = dict(config, holdout_defect_type=holdout) if holdout else config
     result = {
         "run_name": run_name,
         "category": cat_label,
-        "config": config,
+        "config": result_config,
         "device": str(dev),
         "epochs_run": epochs,
         "best_val_auroc": best_val_auroc,
@@ -225,6 +248,10 @@ def _build_parser() -> argparse.ArgumentParser:
                    help="cap batches per train/eval loop (for fast smoke tests)")
     p.add_argument("--num-workers", type=int, default=0)
     p.add_argument("--data-root", default="data/raw")
+    p.add_argument("--holdout-defect-type", default=None,
+                   help="LODO fold: hold out this test/<type> folder (see "
+                        "src.data.dataset.defect_types to enumerate valid values). "
+                        "Overrides config's holdout_defect_type if both are set.")
     return p
 
 
@@ -233,7 +260,7 @@ def main(argv=None):
     config = load_config(args.config)
     train(config, device=args.device, limit_batches=args.limit_batches,
           num_workers=args.num_workers, data_root=args.data_root,
-          epochs_override=args.epochs)
+          epochs_override=args.epochs, holdout_defect_type=args.holdout_defect_type)
 
 
 if __name__ == "__main__":
