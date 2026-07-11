@@ -38,7 +38,9 @@
 set -e
 CAT=${1:?"usage: bash scripts/run_lodo_sweep.sh <category> [--dry-run]"}
 MODE=${2:-}
-N_SYNTH=800
+# 500 (not the bare ~200-390 balance number "ours" actually mixes in): keeps
+# headroom for a possible later mix-ratio ablation without regenerating.
+N_SYNTH=500
 
 TYPES=$(python -m src.data.dataset "${CAT}" 2>&1) || {
   echo "skipping ${CAT}: ${TYPES}"
