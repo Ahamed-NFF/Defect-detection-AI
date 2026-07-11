@@ -1,12 +1,13 @@
 """
-Download a 3-category subset of MVTec AD via Hugging Face.
+Download a 6-category subset of MVTec AD via Hugging Face.
 
 The official MVTec AD release is a ~5 GB tarball gated behind a registration
 form, which is impractical on a bandwidth-constrained machine. The
 ``Voxel51/mvtec-ad`` dataset on Hugging Face mirrors the same data and lets us
-fetch only the categories we actually need. We use exactly three:
+fetch only the categories we actually need. We use six:
 
-    bottle, hazelnut, carpet     (2 objects + 1 texture)
+    bottle, hazelnut, metal_nut, screw     (4 objects)
+    carpet, tile                           (2 textures)
 
 The Voxel51 mirror is a *FiftyOne export*, not the canonical MVTec layout:
 images live flat under ``data/data_N/*.png`` and the per-image labels
@@ -29,7 +30,7 @@ images live flat under ``data/data_N/*.png`` and the per-image labels
 
 Run as::
 
-    python -m src.data.download --categories bottle hazelnut carpet --out data/raw
+    python -m src.data.download --categories bottle hazelnut metal_nut screw carpet tile --out data/raw
 
 Idempotent: a category whose canonical layout already verifies is skipped
 unless ``--force`` is passed.
@@ -46,7 +47,7 @@ import shutil
 import sys
 from pathlib import Path
 
-CATEGORIES = ["bottle", "hazelnut", "carpet"]
+CATEGORIES = ["bottle", "hazelnut", "metal_nut", "screw", "carpet", "tile"]
 HF_REPO_ID = "Voxel51/mvtec-ad"
 MANIFEST_FILENAME = "samples.json"
 STAGING_DIRNAME = "_hf_staging"
@@ -395,7 +396,7 @@ def download(categories, out_dir, force: bool = False, **_ignored):
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         description=(
-            "Download a 3-category subset of MVTec AD from Hugging Face "
+            "Download a 6-category subset of MVTec AD from Hugging Face "
             "(Voxel51/mvtec-ad) and normalize it into the canonical layout."
         ),
     )
