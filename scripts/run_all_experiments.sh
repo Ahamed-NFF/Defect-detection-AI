@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# DEPRECATED: drives the pooled/re-split protocol (src.data.dataset.build_loaders),
+# which is superseded by LODO (scripts/run_lodo_sweep.sh) -- see the module
+# docstring in src/data/dataset.py. Kept so prior results stay reproducible;
+# do not use this for new experiments.
+#
 # Convenience: run the full experiment sweep for one category.
 # Usage: bash scripts/run_all_experiments.sh <category>
 #   category is any of: bottle hazelnut metal_nut screw carpet tile
