@@ -13,6 +13,18 @@ Why this over StyleGAN2-ADA: shorter runs (1-3h vs 24-48h), checkpointable,
 more current literature (AnomalyDiffusion AAAI'24, blended latent diffusion '24).
 
 Usage:
+    # LODO fold generator (current protocol): trains on EXACTLY the real
+    # defect images the classifier trains on for that fold (held-out type and
+    # val slice excluded -- src.data.dataset.lodo_train_defect_paths is the
+    # single source of truth), checkpoints to
+    # experiments/checkpoints/<cat>_holdout_<type>_lora/, and writes a
+    # manifest.json recording exactly what it saw:
+    python -m src.generative.train_lora --category bottle \
+        --holdout-defect-type broken_large --config configs/diffusion_lora.yaml
+
+    # All-defects generator (DEPRECATED for LODO -- the generator sees every
+    # defect type, so its synthetic images are invalid for any LODO "ours"
+    # row; kept only for the old pooled-split experiments):
     python -m src.generative.train_lora --category bottle \
         --config configs/diffusion_lora.yaml
 
@@ -30,15 +42,21 @@ Owner: Member 2 (Generative Lead)
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import re
+import time
 from pathlib import Path
 
 import yaml
 
 # NOTE: torch / diffusers / peft are imported lazily inside train() so this
 # module (and its pure helpers below) can be imported/tested without them.
+# src.data.dataset is likewise imported lazily (it pulls in torchvision).
 
 IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"}
+MANIFEST_FILENAME = "manifest.json"
+FINAL_WEIGHTS_FILENAME = "pytorch_lora_weights.safetensors"  # written by save_final()
 
 
 # --------------------------------------------------------------------------- #
@@ -59,7 +77,13 @@ def format_config(config: dict, category: str) -> dict:
 
 
 def find_defect_images(data_root, category) -> list[Path]:
-    """Real defect images for a category: data/raw/<cat>/test/<defect>/* (not good)."""
+    """Real defect images for a category: data/raw/<cat>/test/<defect>/* (not good).
+
+    DEPRECATED for LODO: this returns EVERY defect type, including whatever a
+    fold holds out, so a generator trained on it leaks the held-out type.
+    Used only by the all-defects path (old pooled-split experiments). LODO
+    fold training uses src.data.dataset.lodo_train_defect_paths instead.
+    """
     test_dir = Path(data_root) / category / "test"
     if not test_dir.is_dir():
         return []
@@ -87,11 +111,143 @@ def latest_checkpoint(output_dir):
 
 
 # --------------------------------------------------------------------------- #
+# LODO fold manifest (pure/CPU -- no torch needed, unit-testable)
+# --------------------------------------------------------------------------- #
+def _sha256_of_paths(paths) -> str:
+    """Stable digest of a (pre-sorted) list of paths, for manifest evidence."""
+    return hashlib.sha256("\n".join(str(p) for p in paths).encode()).hexdigest()
+
+
+def build_fold_manifest(category, holdout_defect_type, cfg, data_root="data/raw",
+                        split_seed=None, torch_seed=42) -> dict:
+    """Manifest for one fold's generator: exactly what it trains on, and proof.
+
+    The training file list comes from src.data.dataset.lodo_train_defect_paths
+    (the classifier's own LODO partition code -- the single source of truth).
+    As independent evidence, the classifier's train-split defect files are
+    ALSO collected through the classifier's real entry point
+    (build_loaders_lodo) and their count/hash + an explicit equality result
+    are recorded, so the manifest itself documents the generator/classifier
+    file-set equality without cross-referencing other artifacts. Raises if
+    they somehow differ, or if the held-out type shows up in the file set.
+
+    ``cfg`` is the (already category-formatted) diffusion config dict; the
+    hyperparameters recorded here are informational for the paper trail.
+    """
+    from src.data.dataset import (
+        DEFECT,
+        SPLIT_SEED,
+        LODO_PROTOCOL_VERSION,
+        build_loaders_lodo,
+        defect_types,
+        lodo_train_defect_paths,
+    )
+
+    if split_seed is None:
+        split_seed = SPLIT_SEED
+
+    train_files = lodo_train_defect_paths(category, holdout_defect_type,
+                                          data_root=data_root, seed=split_seed)
+    if not train_files:
+        raise SystemExit(
+            f"no LODO train defect images for {category!r} holdout={holdout_defect_type!r} "
+            f"under {data_root!r} -- has the category been downloaded?"
+        )
+    trained_on_types = sorted({p.parent.name for p in train_files})
+    all_types = defect_types(category, data_root=data_root)
+    excluded_types = sorted(set(all_types) - set(trained_on_types))
+
+    if holdout_defect_type in trained_on_types:
+        raise RuntimeError(
+            f"LODO invariant violated: held-out type {holdout_defect_type!r} present "
+            f"in the generator training set for {category!r}"
+        )
+
+    # Independent pass through the classifier's actual entry point.
+    train_loader, _, _ = build_loaders_lodo(category, holdout_defect_type,
+                                            data_root=data_root, seed=split_seed)
+    clf_files = sorted(p for p, label in train_loader.dataset.samples if label == DEFECT)
+    file_set_equal = [str(p) for p in clf_files] == [str(p) for p in train_files]
+    if not file_set_equal:
+        raise RuntimeError(
+            f"generator/classifier train-defect file sets differ for {category!r} "
+            f"holdout={holdout_defect_type!r} (generator={len(train_files)}, "
+            f"classifier={len(clf_files)}) -- the source of truth has drifted"
+        )
+
+    return {
+        "protocol_version": LODO_PROTOCOL_VERSION,
+        "category": category,
+        "held_out_type": holdout_defect_type,
+        "trained_on_types": trained_on_types,
+        "excluded_types": excluded_types,
+        "train_files": [str(p) for p in train_files],
+        "n_train_files": len(train_files),
+        "train_files_sha256": _sha256_of_paths(train_files),
+        "classifier_train_defect_count": len(clf_files),
+        "classifier_train_defect_sha256": _sha256_of_paths(clf_files),
+        "file_set_equal": file_set_equal,
+        "split_seed": split_seed,
+        "torch_seed": torch_seed,
+        "base_model": cfg.get("base_model", "runwayml/stable-diffusion-v1-5"),
+        "lora_rank": int(cfg.get("lora_rank", 16)),
+        "resolution": int(cfg.get("resolution", 512)),
+        "max_train_steps": int(cfg.get("max_train_steps", 1500)),
+        "instance_prompt": cfg.get("instance_prompt",
+                                   f"a photo of a sks {category} with a defect"),
+        "status": "training",
+        "created": time.strftime("%Y-%m-%dT%H:%M:%S"),
+    }
+
+
+def fold_lora_complete(category, holdout_defect_type,
+                       checkpoints_root="experiments/checkpoints") -> bool:
+    """True iff a fold's generator finished AND its manifest matches expectation.
+
+    Used by the sweep's resume logic (shared GPU queue): requires final
+    diffusers weights + a manifest whose category/held-out type/protocol all
+    agree and whose status is "complete". A stale/mismatched/mid-training
+    fold returns False and gets (re)trained.
+    """
+    from src.data.dataset import LODO_PROTOCOL_VERSION, lodo_lora_checkpoint_dir
+
+    out = lodo_lora_checkpoint_dir(category, holdout_defect_type,
+                                   checkpoints_root=checkpoints_root)
+    manifest_path = out / MANIFEST_FILENAME
+    if not (manifest_path.is_file() and (out / FINAL_WEIGHTS_FILENAME).is_file()):
+        return False
+    try:
+        m = json.loads(manifest_path.read_text())
+    except (json.JSONDecodeError, OSError):
+        return False
+    return (
+        m.get("protocol_version") == LODO_PROTOCOL_VERSION
+        and m.get("category") == category
+        and m.get("held_out_type") == holdout_defect_type
+        and holdout_defect_type not in m.get("trained_on_types", [])
+        and m.get("status") == "complete"
+    )
+
+
+# --------------------------------------------------------------------------- #
 # Training (GPU path — heavy imports live here)
 # --------------------------------------------------------------------------- #
 def train(category, config, data_root="data/raw", max_steps_override=None,
-          resume=True, num_workers=2, seed=42):
-    """Run LoRA fine-tuning. Checkpoints every N steps to survive queue eviction."""
+          resume=True, num_workers=2, seed=42, holdout_defect_type=None,
+          split_seed=None):
+    """Run LoRA fine-tuning. Checkpoints every N steps to survive queue eviction.
+
+    holdout_defect_type: if set, trains a LODO fold generator: images come
+    from src.data.dataset.lodo_train_defect_paths (exactly the classifier's
+    train-split defects for that fold), output goes to
+    lodo_lora_checkpoint_dir(), and a manifest.json documenting the training
+    set is written there (status "training" -> "complete"). If None, the
+    DEPRECATED-for-LODO all-defects path runs (every test/<type> image,
+    config-template output_dir) for the old pooled-split experiments.
+    split_seed: LODO split seed for the fold's file selection; defaults to
+    the dataset module's SPLIT_SEED so generator and classifier stay in
+    lockstep by default.
+    """
     # Check the GPU first so a CPU box fails fast with a clear message instead of
     # paying the (slow) cost of importing diffusers/transformers.
     import torch
@@ -127,14 +283,30 @@ def train(category, config, data_root="data/raw", max_steps_override=None,
     max_steps = int(max_steps_override or cfg.get("max_train_steps", 1500))
     ckpt_every = int(cfg.get("checkpoint_every", 250))
     prompt = cfg.get("instance_prompt", f"a photo of a sks {category} with a defect")
-    output_dir = Path(cfg.get("output_dir", f"experiments/checkpoints/{category}_lora"))
     fp16 = cfg.get("mixed_precision", "fp16") == "fp16"
 
     device = torch.device("cuda")
     weight_dtype = torch.float16 if fp16 else torch.float32
     torch.manual_seed(seed)
 
-    images = find_defect_images(data_root, category)
+    manifest = None
+    if holdout_defect_type is not None:
+        from src.data.dataset import lodo_lora_checkpoint_dir
+
+        manifest = build_fold_manifest(category, holdout_defect_type, cfg,
+                                       data_root=data_root, split_seed=split_seed,
+                                       torch_seed=seed)
+        output_dir = Path(lodo_lora_checkpoint_dir(category, holdout_defect_type))
+        images = [Path(f) for f in manifest["train_files"]]
+        print(f"[{category}] LODO fold: holdout={holdout_defect_type} | training on "
+              f"{len(images)} real defect images of types {manifest['trained_on_types']} "
+              f"(= the classifier's train defects; val slice + held-out type excluded)")
+    else:
+        output_dir = Path(cfg.get("output_dir", f"experiments/checkpoints/{category}_lora"))
+        images = find_defect_images(data_root, category)
+        print(f"[{category}] all-defects generator (DEPRECATED for LODO -- sees every "
+              f"defect type; valid only for the old pooled-split experiments)")
+
     if not images:
         raise SystemExit(
             f"no defect images under {Path(data_root)/category/'test'} — "
@@ -143,6 +315,9 @@ def train(category, config, data_root="data/raw", max_steps_override=None,
     print(f"[{category}] training LoRA on {len(images)} real defect images "
           f"| base={base_model} res={resolution} rank={rank} steps={max_steps}")
     output_dir.mkdir(parents=True, exist_ok=True)
+    if manifest is not None:
+        (output_dir / MANIFEST_FILENAME).write_text(json.dumps(manifest, indent=2))
+        print(f"  wrote {output_dir / MANIFEST_FILENAME} (status=training)")
 
     # --- dataset: image -> [-1, 1] tensor; the prompt is fixed for all images ---
     tform = T.Compose([
@@ -227,6 +402,11 @@ def train(category, config, data_root="data/raw", max_steps_override=None,
             save_directory=str(output_dir), unet_lora_layers=lora_sd, safe_serialization=True,
         )
         print(f"  saved final LoRA weights -> {output_dir} (for generate.py)")
+        if manifest is not None:
+            manifest["status"] = "complete"
+            manifest["finished"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+            (output_dir / MANIFEST_FILENAME).write_text(json.dumps(manifest, indent=2))
+            print(f"  updated {output_dir / MANIFEST_FILENAME} (status=complete)")
 
     # --- training loop ---
     unet.train()
@@ -282,6 +462,15 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--no-resume", action="store_true", help="ignore existing checkpoints")
     p.add_argument("--num-workers", type=int, default=2)
     p.add_argument("--seed", type=int, default=42)
+    p.add_argument("--holdout-defect-type", default=None,
+                   help="LODO fold: train the generator on exactly the classifier's "
+                        "train defects for this fold (held-out type + val slice "
+                        "excluded); writes checkpoint + manifest to "
+                        "experiments/checkpoints/<cat>_holdout_<type>_lora/")
+    p.add_argument("--split-seed", type=int, default=None,
+                   help="LODO split seed for fold file selection (default: the "
+                        "dataset module's SPLIT_SEED, keeping generator and "
+                        "classifier in lockstep)")
     return p
 
 
@@ -290,7 +479,8 @@ def main(argv=None):
     config = load_config(args.config)
     train(args.category, config, data_root=args.data_root,
           max_steps_override=args.max_steps, resume=not args.no_resume,
-          num_workers=args.num_workers, seed=args.seed)
+          num_workers=args.num_workers, seed=args.seed,
+          holdout_defect_type=args.holdout_defect_type, split_seed=args.split_seed)
 
 
 if __name__ == "__main__":
