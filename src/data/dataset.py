@@ -309,6 +309,13 @@ def build_loaders_multi(categories, batch_size=32, few_shot_n=None,
 # --------------------------------------------------------------------------- #
 # LEAVE-ONE-DEFECT-TYPE-OUT (LODO) split -- current protocol
 # --------------------------------------------------------------------------- #
+# Self-identifying protocol tag recorded in every per-fold generator manifest:
+# "train_defects_only" = the generator trains on exactly the classifier's
+# TRAIN-split defects (the val slice of the non-held-out pool is excluded),
+# per lodo_train_defect_paths(). Bump this string if the protocol changes.
+LODO_PROTOCOL_VERSION = "lodo_v1_train_defects_only"
+
+
 def defect_types(category, data_root="data/raw") -> list[str]:
     """Sorted defect-type directory names under <data_root>/<category>/test/.
 
@@ -520,6 +527,57 @@ def build_loaders_lodo(category, holdout_defect_type, batch_size=32, few_shot_n=
     test_loader = DataLoader(test_ds, batch_size=batch_size, shuffle=False,
                              num_workers=num_workers)
     return train_loader, val_loader, test_loader
+
+
+# --------------------------------------------------------------------------- #
+# LODO single source of truth for the generative pipeline
+#
+# The per-fold LoRA generator must train on EXACTLY the real defect images the
+# classifier trains on for that fold -- no more (no held-out type, no val
+# slice), no less. These helpers are that single source of truth, plus the one
+# place the per-fold checkpoint/synthetic path conventions live. They are
+# imported by src/generative/train_lora.py, src/generative/generate.py,
+# src/classifier/train.py, and scripts/run_lodo_sweep.sh -- path agreement
+# between producer and consumer is enforced by these shared functions, never
+# by coincidentally-equal strings. Do NOT reimplement any of this in the
+# generative code.
+# --------------------------------------------------------------------------- #
+def lodo_train_defect_paths(category, holdout_defect_type, data_root="data/raw",
+                            seed=SPLIT_SEED) -> list[Path]:
+    """The real defect image files the classifier TRAINS on for one LODO fold.
+
+    Implemented by instantiating LodoDefectDataset's train split itself (no
+    few-shot cap, no synthetic mixing) and filtering out the good images, so
+    this is definitionally the classifier's training defect set -- if the
+    split logic ever changes, this changes with it and the two cannot drift.
+    Excludes the held-out type AND the val slice of the non-held-out pool
+    (LODO_PROTOCOL_VERSION = "train_defects_only").
+
+    Returned sorted for stable manifests/hashes; training order is up to the
+    caller's shuffling.
+    """
+    root = Path(data_root) / category
+    ds = LodoDefectDataset(root, holdout_defect_type, split="train", seed=seed)
+    return sorted(p for p, label in ds.samples if label == DEFECT)
+
+
+def lodo_lora_checkpoint_dir(category, holdout_defect_type,
+                             checkpoints_root="experiments/checkpoints") -> Path:
+    """Where the per-fold LoRA generator checkpoints + manifest.json live."""
+    return Path(checkpoints_root) / f"{category}_holdout_{holdout_defect_type}_lora"
+
+
+def lodo_synthetic_dir(category, holdout_defect_type,
+                       synthetic_root="data/synthetic_lodo") -> Path:
+    """Where a fold's synthetic images are written and read from.
+
+    Deliberately a SIBLING of data/synthetic/ (not nested inside it): the
+    deprecated pooled "ours" configs point synthetic_dir at
+    data/synthetic/<category>, which _list_images scans RECURSIVELY -- nesting
+    fold dirs under it would let a re-run of an old pooled config silently
+    ingest fold images. The sibling root makes that structurally impossible.
+    """
+    return Path(synthetic_root) / category / f"holdout_{holdout_defect_type}"
 
 
 # --------------------------------------------------------------------------- #
