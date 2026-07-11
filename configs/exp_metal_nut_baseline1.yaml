@@ -1,0 +1,10 @@
+# Baseline 1: real defects only, no augmentation (Member 3)
+run_name: "metal_nut_baseline1"
+category: "metal_nut"
+backbone: "resnet50"
+traditional_aug: false
+use_synthetic: false
+few_shot_n: null
+epochs: 30
+batch_size: 32
+lr: 1.0e-4

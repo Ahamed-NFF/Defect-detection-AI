@@ -1,0 +1,12 @@
+# Our method: real + traditional + diffusion-synthesized defects (Member 3)
+run_name: "screw_ours"
+category: "screw"
+backbone: "resnet50"
+traditional_aug: true
+use_synthetic: true
+synthetic_dir: "data/synthetic/screw"
+synthetic_n: "balance"   # mix in only enough synthetic to match the good count
+few_shot_n: null
+epochs: 30
+batch_size: 32
+lr: 1.0e-4
