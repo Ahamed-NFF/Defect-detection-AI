@@ -4,11 +4,15 @@ Classification metrics + results-table builder.
 Per-class precision/recall/F1 matters more than overall accuracy here, because
 the defect class is the minority and the whole point. Also compute AUROC.
 
-assemble_table() reads every experiments/results/*.json and emits the comparison
-table (markdown + LaTeX) for the report.
+assemble_table() reads every classifier-run experiments/results/*.json (any
+file with a "metrics" key) and emits the comparison table (markdown + LaTeX).
+assemble_fid_table() reads every experiments/results/fid_<category>.json and
+emits the FID table. Both discover categories from whatever result files
+exist, so adding a category is just a matter of dropping its JSON there —
+nothing here hardcodes bottle/hazelnut/carpet/etc.
 
 Usage:
-    python -m src.eval.metrics            # assemble the comparison table
+    python -m src.eval.metrics            # assemble comparison + FID tables
 
 Owner: Member 3 (metrics), Member 4 (table -> report figures)
 """
@@ -147,10 +151,13 @@ def _fmt(v) -> str:
 
 
 def assemble_table(results_dir="experiments/results", out_dir=None):
-    """Collect all run JSONs into one comparison table (markdown + latex).
+    """Collect all classifier-run JSONs into one comparison table (markdown + latex).
 
-    Reads every ``*.json`` under results_dir, extracts the key metrics, and
-    writes ``comparison.md`` and ``comparison.tex`` next to them (or to out_dir).
+    Reads every ``*.json`` under results_dir that has a "metrics" key (i.e. a
+    classifier run, not an FID result — see assemble_fid_table for those),
+    extracts the key metrics, and writes ``comparison.md`` and ``comparison.tex``
+    next to them (or to out_dir). Categories are whatever appears in the run
+    JSONs — nothing here is hardcoded, so new categories show up automatically.
     Returns the list of per-run row dicts.
     """
     results_dir = Path(results_dir)
@@ -165,9 +172,17 @@ def assemble_table(results_dir="experiments/results", out_dir=None):
     rows = []
     for f in files:
         try:
-            rows.append(_flatten_run(json.loads(f.read_text())))
+            data = json.loads(f.read_text())
         except (json.JSONDecodeError, OSError) as exc:
             print(f"  ! skipping {f.name}: {exc}")
+            continue
+        if "metrics" not in data:
+            continue  # not a classifier run (e.g. an fid_<category>.json)
+        rows.append(_flatten_run(data))
+
+    if not rows:
+        print(f"no classifier-run JSON found in {results_dir} — run some experiments first.")
+        return []
 
     # Sort for a stable, readable table: by category then run name.
     rows.sort(key=lambda r: (str(r["category"]), str(r["run_name"])))
@@ -206,13 +221,71 @@ def assemble_table(results_dir="experiments/results", out_dir=None):
     return rows
 
 
+def assemble_fid_table(results_dir="experiments/results", out_dir=None):
+    """Collect all ``fid_<category>.json`` files into an FID table (markdown + latex).
+
+    Each file is written by ``python -m src.generative.fid ... --out
+    experiments/results/fid_<category>.json``. The category is taken from the
+    filename (nothing here hardcodes which categories exist), so any category
+    with an fid_<category>.json present is picked up automatically. Writes
+    ``fid_comparison.md`` and ``fid_comparison.tex`` next to the run tables (or
+    to out_dir). Returns the list of per-category row dicts.
+    """
+    results_dir = Path(results_dir)
+    out_dir = Path(out_dir) if out_dir else results_dir
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    files = sorted(results_dir.glob("fid_*.json"))
+    if not files:
+        print(f"no fid_<category>.json found in {results_dir} — "
+              f"run src.generative.fid with --out first.")
+        return []
+
+    rows = []
+    for f in files:
+        try:
+            data = json.loads(f.read_text())
+        except (json.JSONDecodeError, OSError) as exc:
+            print(f"  ! skipping {f.name}: {exc}")
+            continue
+        category = f.stem[len("fid_"):]
+        rows.append({"category": category, "fid": data.get("fid")})
+
+    rows.sort(key=lambda r: str(r["category"]))
+
+    cols = [("category", "Category"), ("fid", "FID")]
+
+    header = "| " + " | ".join(h for _, h in cols) + " |"
+    sep = "| " + " | ".join("---" for _ in cols) + " |"
+    body = ["| " + " | ".join(_fmt(r[k]) for k, _ in cols) + " |" for r in rows]
+    md = "\n".join([header, sep, *body]) + "\n"
+    (out_dir / "fid_comparison.md").write_text(md)
+
+    latex_lines = [
+        "\\begin{tabular}{" + "l" * len(cols) + "}",
+        "\\toprule",
+        " & ".join(h for _, h in cols) + " \\\\",
+        "\\midrule",
+    ]
+    for r in rows:
+        latex_lines.append(" & ".join(_fmt(r[k]) for k, _ in cols) + " \\\\")
+    latex_lines += ["\\bottomrule", "\\end{tabular}"]
+    (out_dir / "fid_comparison.tex").write_text("\n".join(latex_lines) + "\n")
+
+    print(md)
+    print(f"wrote {out_dir/'fid_comparison.md'} and {out_dir/'fid_comparison.tex'} "
+          f"({len(rows)} categor{'y' if len(rows) == 1 else 'ies'})")
+    return rows
+
+
 def main(argv=None):
-    p = argparse.ArgumentParser(description="Assemble the experiment comparison table.")
+    p = argparse.ArgumentParser(description="Assemble the experiment comparison + FID tables.")
     p.add_argument("--results-dir", default="experiments/results")
     p.add_argument("--out-dir", default=None,
-                   help="where to write comparison.md/.tex (default: results dir)")
+                   help="where to write the table files (default: results dir)")
     args = p.parse_args(argv)
     assemble_table(args.results_dir, args.out_dir)
+    assemble_fid_table(args.results_dir, args.out_dir)
 
 
 if __name__ == "__main__":
