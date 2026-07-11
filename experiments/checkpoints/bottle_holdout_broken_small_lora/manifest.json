@@ -55,6 +55,6 @@
   "max_train_steps": 1500,
   "instance_prompt": "a photo of a sks bottle with a defect",
   "status": "complete",
-  "created": "2026-07-11T16:24:41",
-  "finished": "2026-07-11T16:30:23"
+  "created": "2026-07-11T18:47:09",
+  "finished": "2026-07-11T18:56:21"
 }

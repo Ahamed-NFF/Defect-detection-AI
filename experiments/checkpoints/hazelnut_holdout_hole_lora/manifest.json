@@ -64,6 +64,6 @@
   "max_train_steps": 1500,
   "instance_prompt": "a photo of a sks hazelnut with a defect",
   "status": "complete",
-  "created": "2026-07-11T16:47:55",
-  "finished": "2026-07-11T16:54:09"
+  "created": "2026-07-11T19:24:58",
+  "finished": "2026-07-11T19:34:16"
 }

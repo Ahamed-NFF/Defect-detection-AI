@@ -80,6 +80,6 @@
   "max_train_steps": 1500,
   "instance_prompt": "a photo of a sks carpet with a defect",
   "status": "complete",
-  "created": "2026-07-11T17:06:17",
-  "finished": "2026-07-11T17:12:00"
+  "created": "2026-07-11T19:53:01",
+  "finished": "2026-07-11T20:02:26"
 }
