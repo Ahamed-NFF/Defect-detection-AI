@@ -2,7 +2,9 @@
 data/raw/
 data/processed/
 data/synthetic/
+data/synthetic_lodo/
 experiments/checkpoints/
+experiments/lora_logs/
 *.ckpt
 *.safetensors
 *.pkl
