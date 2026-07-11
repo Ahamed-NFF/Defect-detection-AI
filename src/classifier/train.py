@@ -33,7 +33,12 @@ import yaml
 from tqdm import tqdm
 
 from src.classifier.model import build_classifier
-from src.data.dataset import build_loaders, build_loaders_lodo, build_loaders_multi
+from src.data.dataset import (
+    build_loaders,
+    build_loaders_lodo,
+    build_loaders_multi,
+    lodo_synthetic_dir,
+)
 from src.eval.metrics import best_threshold, classification_metrics
 
 SEED = 42
@@ -128,6 +133,17 @@ def train(config, device="auto", limit_batches=None, num_workers=0,
         if multi:
             raise SystemExit("LODO (holdout_defect_type) is not supported for combined multi-category runs")
         run_name = f"{run_name}__lodo_{holdout}"
+        if use_synthetic:
+            # Per-fold synthetic images only: derived from the same shared path
+            # helper the generative pipeline writes to, so fold X's classifier
+            # can only ever read fold X's generator output. The config's
+            # synthetic_dir (the shared all-defects pool) is deliberately
+            # ignored under LODO -- that pool's generator saw the held-out type.
+            fold_dir = str(lodo_synthetic_dir(category, holdout))
+            if synthetic_dir and synthetic_dir != fold_dir:
+                print(f"    LODO: overriding config synthetic_dir={synthetic_dir!r} "
+                      f"-> {fold_dir!r} (per-fold generator output)")
+            synthetic_dir = fold_dir
 
     print(f"=== {run_name} | category={cat_label} | device={dev} ===")
     print(f"    traditional_aug={traditional_aug} use_synthetic={use_synthetic} "
