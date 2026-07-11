@@ -36,3 +36,4 @@ frontend/.next/
 .vscode/
 .idea/
 .claude/
+experiments/spot_check/
