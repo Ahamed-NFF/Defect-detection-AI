@@ -1,0 +1,9 @@
+{
+  "category": "screw",
+  "held_out_type": "thread_side",
+  "fid": 111.82440625252914,
+  "n_real": 72,
+  "n_fake": 500,
+  "real": "lodo_train_defect_paths (fold's trained-on real defects)",
+  "fake": "data/synthetic_lodo/screw/holdout_thread_side"
+}

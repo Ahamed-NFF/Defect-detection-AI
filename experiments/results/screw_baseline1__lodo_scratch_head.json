@@ -1,0 +1,68 @@
+{
+  "run_name": "screw_baseline1__lodo_scratch_head",
+  "category": "screw",
+  "config": {
+    "run_name": "screw_baseline1",
+    "category": "screw",
+    "backbone": "resnet50",
+    "traditional_aug": false,
+    "use_synthetic": false,
+    "few_shot_n": null,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "holdout_defect_type": "scratch_head"
+  },
+  "device": "cuda",
+  "epochs_run": 30,
+  "best_val_auroc": 1.0,
+  "threshold": 0.02654637861996889,
+  "checkpoint": "experiments/checkpoints/screw_baseline1__lodo_scratch_head.pt",
+  "metrics": {
+    "accuracy": 0.9333333333333333,
+    "per_class": {
+      "good": {
+        "precision": 1.0,
+        "recall": 0.8571428571428571,
+        "f1": 0.9230769230769231,
+        "support": 21
+      },
+      "defect": {
+        "precision": 0.8888888888888888,
+        "recall": 1.0,
+        "f1": 0.9411764705882353,
+        "support": 24
+      }
+    },
+    "macro": {
+      "precision": 0.9444444444444444,
+      "recall": 0.9285714285714286,
+      "f1": 0.9321266968325792
+    },
+    "auroc": 0.9940476190476191
+  },
+  "metrics_at_0p5": {
+    "accuracy": 0.8444444444444444,
+    "per_class": {
+      "good": {
+        "precision": 0.75,
+        "recall": 1.0,
+        "f1": 0.8571428571428571,
+        "support": 21
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.7083333333333334,
+        "f1": 0.8292682926829268,
+        "support": 24
+      }
+    },
+    "macro": {
+      "precision": 0.875,
+      "recall": 0.8541666666666667,
+      "f1": 0.8432055749128919
+    },
+    "auroc": 0.9940476190476191
+  },
+  "timestamp": "2026-07-12T11:11:32"
+}

@@ -1,0 +1,68 @@
+{
+  "run_name": "carpet_baseline2__lodo_color",
+  "category": "carpet",
+  "config": {
+    "run_name": "carpet_baseline2",
+    "category": "carpet",
+    "backbone": "resnet50",
+    "traditional_aug": true,
+    "use_synthetic": false,
+    "few_shot_n": null,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "holdout_defect_type": "color"
+  },
+  "device": "cuda",
+  "epochs_run": 30,
+  "best_val_auroc": 0.8134920634920635,
+  "threshold": 0.4573875218629837,
+  "checkpoint": "experiments/checkpoints/carpet_baseline2__lodo_color.pt",
+  "metrics": {
+    "accuracy": 0.6060606060606061,
+    "per_class": {
+      "good": {
+        "precision": 0.5238095238095238,
+        "recall": 0.7857142857142857,
+        "f1": 0.6285714285714286,
+        "support": 14
+      },
+      "defect": {
+        "precision": 0.75,
+        "recall": 0.47368421052631576,
+        "f1": 0.5806451612903226,
+        "support": 19
+      }
+    },
+    "macro": {
+      "precision": 0.6369047619047619,
+      "recall": 0.6296992481203008,
+      "f1": 0.6046082949308755
+    },
+    "auroc": 0.6165413533834587
+  },
+  "metrics_at_0p5": {
+    "accuracy": 0.45454545454545453,
+    "per_class": {
+      "good": {
+        "precision": 0.4375,
+        "recall": 1.0,
+        "f1": 0.6086956521739131,
+        "support": 14
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.05263157894736842,
+        "f1": 0.1,
+        "support": 19
+      }
+    },
+    "macro": {
+      "precision": 0.71875,
+      "recall": 0.5263157894736842,
+      "f1": 0.35434782608695653
+    },
+    "auroc": 0.6165413533834587
+  },
+  "timestamp": "2026-07-12T09:30:32"
+}

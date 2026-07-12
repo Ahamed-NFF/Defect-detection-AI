@@ -1,0 +1,68 @@
+{
+  "run_name": "metal_nut_baseline2__lodo_bent",
+  "category": "metal_nut",
+  "config": {
+    "run_name": "metal_nut_baseline2",
+    "category": "metal_nut",
+    "backbone": "resnet50",
+    "traditional_aug": true,
+    "use_synthetic": false,
+    "few_shot_n": null,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "holdout_defect_type": "bent"
+  },
+  "device": "cuda",
+  "epochs_run": 30,
+  "best_val_auroc": 1.0,
+  "threshold": 0.21510116156423464,
+  "checkpoint": "experiments/checkpoints/metal_nut_baseline2__lodo_bent.pt",
+  "metrics": {
+    "accuracy": 0.4722222222222222,
+    "per_class": {
+      "good": {
+        "precision": 0.36666666666666664,
+        "recall": 1.0,
+        "f1": 0.5365853658536586,
+        "support": 11
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.24,
+        "f1": 0.3870967741935484,
+        "support": 25
+      }
+    },
+    "macro": {
+      "precision": 0.6833333333333333,
+      "recall": 0.62,
+      "f1": 0.4618410700236035
+    },
+    "auroc": 0.9054545454545454
+  },
+  "metrics_at_0p5": {
+    "accuracy": 0.4444444444444444,
+    "per_class": {
+      "good": {
+        "precision": 0.3548387096774194,
+        "recall": 1.0,
+        "f1": 0.5238095238095238,
+        "support": 11
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.2,
+        "f1": 0.3333333333333333,
+        "support": 25
+      }
+    },
+    "macro": {
+      "precision": 0.6774193548387097,
+      "recall": 0.6,
+      "f1": 0.4285714285714286
+    },
+    "auroc": 0.9054545454545454
+  },
+  "timestamp": "2026-07-12T10:38:33"
+}

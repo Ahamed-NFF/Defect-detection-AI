@@ -1,0 +1,68 @@
+{
+  "run_name": "metal_nut_baseline2__lodo_flip",
+  "category": "metal_nut",
+  "config": {
+    "run_name": "metal_nut_baseline2",
+    "category": "metal_nut",
+    "backbone": "resnet50",
+    "traditional_aug": true,
+    "use_synthetic": false,
+    "few_shot_n": null,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "holdout_defect_type": "flip"
+  },
+  "device": "cuda",
+  "epochs_run": 30,
+  "best_val_auroc": 0.9898989898989898,
+  "threshold": 0.051394661888480186,
+  "checkpoint": "experiments/checkpoints/metal_nut_baseline2__lodo_flip.pt",
+  "metrics": {
+    "accuracy": 1.0,
+    "per_class": {
+      "good": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 11
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 23
+      }
+    },
+    "macro": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "auroc": 1.0
+  },
+  "metrics_at_0p5": {
+    "accuracy": 0.4117647058823529,
+    "per_class": {
+      "good": {
+        "precision": 0.3548387096774194,
+        "recall": 1.0,
+        "f1": 0.5238095238095238,
+        "support": 11
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.13043478260869565,
+        "f1": 0.23076923076923078,
+        "support": 23
+      }
+    },
+    "macro": {
+      "precision": 0.6774193548387097,
+      "recall": 0.5652173913043478,
+      "f1": 0.3772893772893773
+    },
+    "auroc": 1.0
+  },
+  "timestamp": "2026-07-12T10:51:07"
+}

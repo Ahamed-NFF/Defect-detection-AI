@@ -1,0 +1,70 @@
+{
+  "run_name": "tile_ours__lodo_glue_strip",
+  "category": "tile",
+  "config": {
+    "run_name": "tile_ours",
+    "category": "tile",
+    "backbone": "resnet50",
+    "traditional_aug": true,
+    "use_synthetic": true,
+    "synthetic_dir": "data/synthetic/tile",
+    "synthetic_n": "balance",
+    "few_shot_n": null,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "holdout_defect_type": "glue_strip"
+  },
+  "device": "cuda",
+  "epochs_run": 30,
+  "best_val_auroc": 1.0,
+  "threshold": 0.2093625501729548,
+  "checkpoint": "experiments/checkpoints/tile_ours__lodo_glue_strip.pt",
+  "metrics": {
+    "accuracy": 0.9428571428571428,
+    "per_class": {
+      "good": {
+        "precision": 0.8947368421052632,
+        "recall": 1.0,
+        "f1": 0.9444444444444444,
+        "support": 17
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.8888888888888888,
+        "f1": 0.9411764705882353,
+        "support": 18
+      }
+    },
+    "macro": {
+      "precision": 0.9473684210526316,
+      "recall": 0.9444444444444444,
+      "f1": 0.9428104575163399
+    },
+    "auroc": 1.0
+  },
+  "metrics_at_0p5": {
+    "accuracy": 0.9142857142857143,
+    "per_class": {
+      "good": {
+        "precision": 0.85,
+        "recall": 1.0,
+        "f1": 0.918918918918919,
+        "support": 17
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.8333333333333334,
+        "f1": 0.9090909090909091,
+        "support": 18
+      }
+    },
+    "macro": {
+      "precision": 0.925,
+      "recall": 0.9166666666666667,
+      "f1": 0.914004914004914
+    },
+    "auroc": 1.0
+  },
+  "timestamp": "2026-07-12T12:04:15"
+}

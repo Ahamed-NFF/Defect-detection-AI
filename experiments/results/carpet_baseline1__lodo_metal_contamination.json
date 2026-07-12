@@ -1,0 +1,68 @@
+{
+  "run_name": "carpet_baseline1__lodo_metal_contamination",
+  "category": "carpet",
+  "config": {
+    "run_name": "carpet_baseline1",
+    "category": "carpet",
+    "backbone": "resnet50",
+    "traditional_aug": false,
+    "use_synthetic": false,
+    "few_shot_n": null,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "holdout_defect_type": "metal_contamination"
+  },
+  "device": "cuda",
+  "epochs_run": 30,
+  "best_val_auroc": 0.8174603174603174,
+  "threshold": 0.9047536849975586,
+  "checkpoint": "experiments/checkpoints/carpet_baseline1__lodo_metal_contamination.pt",
+  "metrics": {
+    "accuracy": 0.5806451612903226,
+    "per_class": {
+      "good": {
+        "precision": 0.5294117647058824,
+        "recall": 0.6428571428571429,
+        "f1": 0.5806451612903226,
+        "support": 14
+      },
+      "defect": {
+        "precision": 0.6428571428571429,
+        "recall": 0.5294117647058824,
+        "f1": 0.5806451612903226,
+        "support": 17
+      }
+    },
+    "macro": {
+      "precision": 0.5861344537815126,
+      "recall": 0.5861344537815126,
+      "f1": 0.5806451612903226
+    },
+    "auroc": 0.6512605042016806
+  },
+  "metrics_at_0p5": {
+    "accuracy": 0.5806451612903226,
+    "per_class": {
+      "good": {
+        "precision": 1.0,
+        "recall": 0.07142857142857142,
+        "f1": 0.13333333333333333,
+        "support": 14
+      },
+      "defect": {
+        "precision": 0.5666666666666667,
+        "recall": 1.0,
+        "f1": 0.723404255319149,
+        "support": 17
+      }
+    },
+    "macro": {
+      "precision": 0.7833333333333333,
+      "recall": 0.5357142857142857,
+      "f1": 0.42836879432624114
+    },
+    "auroc": 0.6512605042016806
+  },
+  "timestamp": "2026-07-12T10:10:40"
+}

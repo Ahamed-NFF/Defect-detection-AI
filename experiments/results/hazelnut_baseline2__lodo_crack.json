@@ -1,0 +1,68 @@
+{
+  "run_name": "hazelnut_baseline2__lodo_crack",
+  "category": "hazelnut",
+  "config": {
+    "run_name": "hazelnut_baseline2",
+    "category": "hazelnut",
+    "backbone": "resnet50",
+    "traditional_aug": true,
+    "use_synthetic": false,
+    "few_shot_n": null,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "holdout_defect_type": "crack"
+  },
+  "device": "cuda",
+  "epochs_run": 30,
+  "best_val_auroc": 1.0,
+  "threshold": 0.507681873627007,
+  "checkpoint": "experiments/checkpoints/hazelnut_baseline2__lodo_crack.pt",
+  "metrics": {
+    "accuracy": 0.8947368421052632,
+    "per_class": {
+      "good": {
+        "precision": 0.8333333333333334,
+        "recall": 1.0,
+        "f1": 0.9090909090909091,
+        "support": 20
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.7777777777777778,
+        "f1": 0.875,
+        "support": 18
+      }
+    },
+    "macro": {
+      "precision": 0.9166666666666667,
+      "recall": 0.8888888888888888,
+      "f1": 0.8920454545454546
+    },
+    "auroc": 1.0
+  },
+  "metrics_at_0p5": {
+    "accuracy": 0.8947368421052632,
+    "per_class": {
+      "good": {
+        "precision": 0.8333333333333334,
+        "recall": 1.0,
+        "f1": 0.9090909090909091,
+        "support": 20
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.7777777777777778,
+        "f1": 0.875,
+        "support": 18
+      }
+    },
+    "macro": {
+      "precision": 0.9166666666666667,
+      "recall": 0.8888888888888888,
+      "f1": 0.8920454545454546
+    },
+    "auroc": 1.0
+  },
+  "timestamp": "2026-07-12T08:18:39"
+}

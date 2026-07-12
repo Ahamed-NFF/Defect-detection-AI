@@ -1,0 +1,70 @@
+{
+  "run_name": "carpet_ours__lodo_thread",
+  "category": "carpet",
+  "config": {
+    "run_name": "carpet_ours",
+    "category": "carpet",
+    "backbone": "resnet50",
+    "traditional_aug": true,
+    "use_synthetic": true,
+    "synthetic_dir": "data/synthetic/carpet",
+    "synthetic_n": "balance",
+    "few_shot_n": null,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "holdout_defect_type": "thread"
+  },
+  "device": "cuda",
+  "epochs_run": 30,
+  "best_val_auroc": 1.0,
+  "threshold": 0.9995353519916534,
+  "checkpoint": "experiments/checkpoints/carpet_ours__lodo_thread.pt",
+  "metrics": {
+    "accuracy": 0.5757575757575758,
+    "per_class": {
+      "good": {
+        "precision": 0.5,
+        "recall": 0.9285714285714286,
+        "f1": 0.65,
+        "support": 14
+      },
+      "defect": {
+        "precision": 0.8571428571428571,
+        "recall": 0.3157894736842105,
+        "f1": 0.46153846153846156,
+        "support": 19
+      }
+    },
+    "macro": {
+      "precision": 0.6785714285714286,
+      "recall": 0.6221804511278195,
+      "f1": 0.5557692307692308
+    },
+    "auroc": 0.5977443609022556
+  },
+  "metrics_at_0p5": {
+    "accuracy": 0.45454545454545453,
+    "per_class": {
+      "good": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 14
+      },
+      "defect": {
+        "precision": 0.5172413793103449,
+        "recall": 0.7894736842105263,
+        "f1": 0.625,
+        "support": 19
+      }
+    },
+    "macro": {
+      "precision": 0.25862068965517243,
+      "recall": 0.39473684210526316,
+      "f1": 0.3125
+    },
+    "auroc": 0.5977443609022556
+  },
+  "timestamp": "2026-07-12T10:34:53"
+}

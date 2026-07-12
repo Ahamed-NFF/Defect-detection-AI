@@ -1,0 +1,70 @@
+{
+  "run_name": "tile_ours__lodo_rough",
+  "category": "tile",
+  "config": {
+    "run_name": "tile_ours",
+    "category": "tile",
+    "backbone": "resnet50",
+    "traditional_aug": true,
+    "use_synthetic": true,
+    "synthetic_dir": "data/synthetic/tile",
+    "synthetic_n": "balance",
+    "few_shot_n": null,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "holdout_defect_type": "rough"
+  },
+  "device": "cuda",
+  "epochs_run": 30,
+  "best_val_auroc": 1.0,
+  "threshold": 0.4584222286939621,
+  "checkpoint": "experiments/checkpoints/tile_ours__lodo_rough.pt",
+  "metrics": {
+    "accuracy": 0.59375,
+    "per_class": {
+      "good": {
+        "precision": 0.5666666666666667,
+        "recall": 1.0,
+        "f1": 0.723404255319149,
+        "support": 17
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.13333333333333333,
+        "f1": 0.23529411764705882,
+        "support": 15
+      }
+    },
+    "macro": {
+      "precision": 0.7833333333333333,
+      "recall": 0.5666666666666667,
+      "f1": 0.4793491864831039
+    },
+    "auroc": 0.9882352941176471
+  },
+  "metrics_at_0p5": {
+    "accuracy": 0.59375,
+    "per_class": {
+      "good": {
+        "precision": 0.5666666666666667,
+        "recall": 1.0,
+        "f1": 0.723404255319149,
+        "support": 17
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.13333333333333333,
+        "f1": 0.23529411764705882,
+        "support": 15
+      }
+    },
+    "macro": {
+      "precision": 0.7833333333333333,
+      "recall": 0.5666666666666667,
+      "f1": 0.4793491864831039
+    },
+    "auroc": 0.9882352941176471
+  },
+  "timestamp": "2026-07-12T12:34:15"
+}

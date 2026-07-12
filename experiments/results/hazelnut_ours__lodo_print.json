@@ -1,0 +1,70 @@
+{
+  "run_name": "hazelnut_ours__lodo_print",
+  "category": "hazelnut",
+  "config": {
+    "run_name": "hazelnut_ours",
+    "category": "hazelnut",
+    "backbone": "resnet50",
+    "traditional_aug": true,
+    "use_synthetic": true,
+    "synthetic_dir": "data/synthetic/hazelnut",
+    "synthetic_n": "balance",
+    "few_shot_n": null,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "holdout_defect_type": "print"
+  },
+  "device": "cuda",
+  "epochs_run": 30,
+  "best_val_auroc": 1.0,
+  "threshold": 0.4677820321521722,
+  "checkpoint": "experiments/checkpoints/hazelnut_ours__lodo_print.pt",
+  "metrics": {
+    "accuracy": 0.8648648648648649,
+    "per_class": {
+      "good": {
+        "precision": 0.8,
+        "recall": 1.0,
+        "f1": 0.8888888888888888,
+        "support": 20
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.7058823529411765,
+        "f1": 0.8275862068965517,
+        "support": 17
+      }
+    },
+    "macro": {
+      "precision": 0.9,
+      "recall": 0.8529411764705883,
+      "f1": 0.8582375478927202
+    },
+    "auroc": 0.9647058823529412
+  },
+  "metrics_at_0p5": {
+    "accuracy": 0.8648648648648649,
+    "per_class": {
+      "good": {
+        "precision": 0.8,
+        "recall": 1.0,
+        "f1": 0.8888888888888888,
+        "support": 20
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.7058823529411765,
+        "f1": 0.8275862068965517,
+        "support": 17
+      }
+    },
+    "macro": {
+      "precision": 0.9,
+      "recall": 0.8529411764705883,
+      "f1": 0.8582375478927202
+    },
+    "auroc": 0.9647058823529412
+  },
+  "timestamp": "2026-07-12T09:21:34"
+}

@@ -1,0 +1,70 @@
+{
+  "run_name": "metal_nut_ours__lodo_scratch",
+  "category": "metal_nut",
+  "config": {
+    "run_name": "metal_nut_ours",
+    "category": "metal_nut",
+    "backbone": "resnet50",
+    "traditional_aug": true,
+    "use_synthetic": true,
+    "synthetic_dir": "data/synthetic/metal_nut",
+    "synthetic_n": "balance",
+    "few_shot_n": null,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "holdout_defect_type": "scratch"
+  },
+  "device": "cuda",
+  "epochs_run": 30,
+  "best_val_auroc": 1.0,
+  "threshold": 0.00041803656495176256,
+  "checkpoint": "experiments/checkpoints/metal_nut_ours__lodo_scratch.pt",
+  "metrics": {
+    "accuracy": 0.8529411764705882,
+    "per_class": {
+      "good": {
+        "precision": 0.7142857142857143,
+        "recall": 0.9090909090909091,
+        "f1": 0.8,
+        "support": 11
+      },
+      "defect": {
+        "precision": 0.95,
+        "recall": 0.8260869565217391,
+        "f1": 0.8837209302325582,
+        "support": 23
+      }
+    },
+    "macro": {
+      "precision": 0.8321428571428571,
+      "recall": 0.8675889328063241,
+      "f1": 0.8418604651162791
+    },
+    "auroc": 0.9683794466403162
+  },
+  "metrics_at_0p5": {
+    "accuracy": 0.5588235294117647,
+    "per_class": {
+      "good": {
+        "precision": 0.4230769230769231,
+        "recall": 1.0,
+        "f1": 0.5945945945945946,
+        "support": 11
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.34782608695652173,
+        "f1": 0.5161290322580645,
+        "support": 23
+      }
+    },
+    "macro": {
+      "precision": 0.7115384615384616,
+      "recall": 0.6739130434782609,
+      "f1": 0.5553618134263296
+    },
+    "auroc": 0.9683794466403162
+  },
+  "timestamp": "2026-07-12T10:59:58"
+}

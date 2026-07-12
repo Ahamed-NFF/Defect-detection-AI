@@ -1,0 +1,68 @@
+{
+  "run_name": "carpet_baseline1__lodo_hole",
+  "category": "carpet",
+  "config": {
+    "run_name": "carpet_baseline1",
+    "category": "carpet",
+    "backbone": "resnet50",
+    "traditional_aug": false,
+    "use_synthetic": false,
+    "few_shot_n": null,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "holdout_defect_type": "hole"
+  },
+  "device": "cuda",
+  "epochs_run": 30,
+  "best_val_auroc": 0.8888888888888888,
+  "threshold": 0.9794244170188904,
+  "checkpoint": "experiments/checkpoints/carpet_baseline1__lodo_hole.pt",
+  "metrics": {
+    "accuracy": 0.8387096774193549,
+    "per_class": {
+      "good": {
+        "precision": 0.9090909090909091,
+        "recall": 0.7142857142857143,
+        "f1": 0.8,
+        "support": 14
+      },
+      "defect": {
+        "precision": 0.8,
+        "recall": 0.9411764705882353,
+        "f1": 0.8648648648648649,
+        "support": 17
+      }
+    },
+    "macro": {
+      "precision": 0.8545454545454545,
+      "recall": 0.8277310924369747,
+      "f1": 0.8324324324324325
+    },
+    "auroc": 0.953781512605042
+  },
+  "metrics_at_0p5": {
+    "accuracy": 0.5483870967741935,
+    "per_class": {
+      "good": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 14
+      },
+      "defect": {
+        "precision": 0.5483870967741935,
+        "recall": 1.0,
+        "f1": 0.7083333333333334,
+        "support": 17
+      }
+    },
+    "macro": {
+      "precision": 0.27419354838709675,
+      "recall": 0.5,
+      "f1": 0.3541666666666667
+    },
+    "auroc": 0.953781512605042
+  },
+  "timestamp": "2026-07-12T09:56:02"
+}

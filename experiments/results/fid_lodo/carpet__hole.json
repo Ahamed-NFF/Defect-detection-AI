@@ -1,0 +1,9 @@
+{
+  "category": "carpet",
+  "held_out_type": "hole",
+  "fid": 145.50693094600996,
+  "n_real": 54,
+  "n_fake": 500,
+  "real": "lodo_train_defect_paths (fold's trained-on real defects)",
+  "fake": "data/synthetic_lodo/carpet/holdout_hole"
+}

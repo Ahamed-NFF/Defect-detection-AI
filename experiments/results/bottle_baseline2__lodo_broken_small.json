@@ -1,0 +1,68 @@
+{
+  "run_name": "bottle_baseline2__lodo_broken_small",
+  "category": "bottle",
+  "config": {
+    "run_name": "bottle_baseline2",
+    "category": "bottle",
+    "backbone": "resnet50",
+    "traditional_aug": true,
+    "use_synthetic": false,
+    "few_shot_n": null,
+    "epochs": 30,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "holdout_defect_type": "broken_small"
+  },
+  "device": "cuda",
+  "epochs_run": 30,
+  "best_val_auroc": 1.0,
+  "threshold": 0.011990759172476828,
+  "checkpoint": "experiments/checkpoints/bottle_baseline2__lodo_broken_small.pt",
+  "metrics": {
+    "accuracy": 1.0,
+    "per_class": {
+      "good": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 10
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 22
+      }
+    },
+    "macro": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "auroc": 1.0
+  },
+  "metrics_at_0p5": {
+    "accuracy": 0.96875,
+    "per_class": {
+      "good": {
+        "precision": 0.9090909090909091,
+        "recall": 1.0,
+        "f1": 0.9523809523809523,
+        "support": 10
+      },
+      "defect": {
+        "precision": 1.0,
+        "recall": 0.9545454545454546,
+        "f1": 0.9767441860465116,
+        "support": 22
+      }
+    },
+    "macro": {
+      "precision": 0.9545454545454546,
+      "recall": 0.9772727272727273,
+      "f1": 0.964562569213732
+    },
+    "auroc": 1.0
+  },
+  "timestamp": "2026-07-12T07:56:22"
+}
